@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja Virtual</title>
+</head>
+<head>
+<body>
+    <title>Mini Petshop Virtual</title>
+<body>
+  <!-- Cabeçalho com Carrinho -->
+  <header>
+    <div class="cart-icon-container">
+      <img src="img/carrinho.png" alt="Carrinho de Compras" class="cart-icon" onclick="toggleCart()">
+      <span class="cart-count">0</span> <!-- Quantidade de produtos no carrinho -->
+    </div>
+  </header>
+
+  <!-- Título e Descrição -->
+  <h1>Boutique Animal Online</h1><br>
+  <p class="fundo-solido">Selecione o produto que deseja comprar:</p>  
+
+  <!-- Lista de Produtos -->
+  <div class="container">
+  
+    <!-- Card de Produto -->
+    <div class="card">
+      <img src="img/produto1.jpg" alt="Produto 1">
+      <h3>Ossinho</h3>
+      <p>Em estoque</p>
+      <p>Preço: R$ <span class="preco">25.90</span></p>
+      <button class="btn btn-success comprar-btn">Comprar</button>
+    </div>
+
+    <!-- Card de Produto -->
+    <div class="card">
+      <img src="img/produto2.jpg" alt="Produto 2">
+      <h3>Petiscos de Carne</h3>
+      <p>Em estoque</p>
+      <p>Preço: R$ <span class="preco">5.90</span></p>
+      <button class="btn btn-success comprar-btn">Comprar</button>
+    </div>
+
+    <!-- Card de Produto -->
+    <div class="card">
+      <img src="img/produto3.jpg" alt="Produto 3">
+      <h3>Mix Saudável</h3>
+      <p>Em estoque</p>
+      <p>Preço: R$ <span class="preco">6.00</span></p>
+      <button class="btn btn-success comprar-btn">Comprar</button>
+    </div>
+
+    <!-- Card de Produto Fora de Estoque -->
+    <div class="card">
+      <img src="img/produto4.jpg" alt="Produto 4">
+      <h3>Palitos de Limpeza Dental</h3>
+      <p style="color:red;">Fora de estoque</p>
+      <p>R$ 4,50</p>
+      <button disabled>Indisponível</button> <!-- Botão desabilitado -->
+    </div>
+
+    <div class="card">
+      <img src="img/produto5.jpg" alt="Produto 5">
+      <h3>Degustação de Ração</h3>
+      <p>Em estoque</p>
+      <p>Preço: R$ <span class="preco">10.00</span></p>
+      <button class="btn btn-success comprar-btn">Comprar</button>
+    </div>
+
+    <div class="card">
+      <img src="img/produto6.jpg" alt="Produto 6">
+      <h3>Ração Premier</h3>
+      <p>Em estoque</p>
+      <p>Preço: R$ <span class="preco">210.00</span></p>
+      <button class="btn btn-success comprar-btn">Comprar</button>
+    </div>
+
+    <div class="card">
+      <img src="img/produto7.jpg" alt="Produto 7">
+      <h3>Ração para Idosos</h3>
+      <p>Em estoque</p>
+      <p>Preço: R$ <span class="preco">131.00</span></p>
+      <button class="btn btn-success comprar-btn">Comprar</button>
+    </div>
+
+    <div class="card">
+      <img src="img/produto8.jpg" alt="Produto 8">
+      <h3>Ração para Filhotes</h3>
+      <p>Em estoque</p>
+      <p>Preço: R$ <span class="preco">124.60</span></p>
+      <button class="btn btn-success comprar-btn">Comprar</button>
+    </div>
+
+  <!-- Modal do Carrinho -->
+  <div class="cart-overlay" id="cartOverlay">
+    <div class="cart-modal"> <!-- ordem do modal-->
+      <div class="cart-header">
+        <h2>Seu Carrinho</h2>
+        <span class="close-cart" onclick="toggleCart()">&times;</span>
+      </div>
+      <div class="cart-items"></div> <!-- Produtos adicionados ao carrinho aparecerão aqui -->
+      <div class="cart-footer">
+        <h3>Total: R$ <span class="cart-total">0.00</span></h3>
+        <button class="limpar-carrinho" onclick="limparCarrinho()">Limpar Carrinho</button>
+        <button class="checkout-btn">Finalizar Compra</button>
+      </div>
+    </div>
+  </div>
