@@ -1,13 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja Virtual</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boutique Animal Online</title>
+
+  <!-- Link do CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- (Opcional) Ícone da aba -->
+  <link rel="icon" href="img/carrinho.png" type="image/png">
 </head>
-<head>
-<body>
-    <title>Mini Petshop Virtual</title>
+
 <body>
   <!-- Cabeçalho com Carrinho -->
   <header>
@@ -23,8 +27,6 @@
 
   <!-- Lista de Produtos -->
   <div class="container">
-  
-    <!-- Card de Produto -->
     <div class="card">
       <img src="img/produto1.jpg" alt="Produto 1">
       <h3>Ossinho</h3>
@@ -33,7 +35,6 @@
       <button class="btn btn-success comprar-btn">Comprar</button>
     </div>
 
-    <!-- Card de Produto -->
     <div class="card">
       <img src="img/produto2.jpg" alt="Produto 2">
       <h3>Petiscos de Carne</h3>
@@ -42,7 +43,6 @@
       <button class="btn btn-success comprar-btn">Comprar</button>
     </div>
 
-    <!-- Card de Produto -->
     <div class="card">
       <img src="img/produto3.jpg" alt="Produto 3">
       <h3>Mix Saudável</h3>
@@ -51,13 +51,12 @@
       <button class="btn btn-success comprar-btn">Comprar</button>
     </div>
 
-    <!-- Card de Produto Fora de Estoque -->
     <div class="card">
       <img src="img/produto4.jpg" alt="Produto 4">
       <h3>Palitos de Limpeza Dental</h3>
       <p style="color:red;">Fora de estoque</p>
       <p>R$ 4,50</p>
-      <button disabled>Indisponível</button> <!-- Botão desabilitado -->
+      <button disabled>Indisponível</button>
     </div>
 
     <div class="card">
@@ -91,15 +90,16 @@
       <p>Preço: R$ <span class="preco">124.60</span></p>
       <button class="btn btn-success comprar-btn">Comprar</button>
     </div>
+  </div>
 
   <!-- Modal do Carrinho -->
   <div class="cart-overlay" id="cartOverlay">
-    <div class="cart-modal"> <!-- ordem do modal-->
+    <div class="cart-modal">
       <div class="cart-header">
         <h2>Seu Carrinho</h2>
         <span class="close-cart" onclick="toggleCart()">&times;</span>
       </div>
-      <div class="cart-items"></div> <!-- Produtos adicionados ao carrinho aparecerão aqui -->
+      <div class="cart-items"></div>
       <div class="cart-footer">
         <h3>Total: R$ <span class="cart-total">0.00</span></h3>
         <button class="limpar-carrinho" onclick="limparCarrinho()">Limpar Carrinho</button>
@@ -107,3 +107,8 @@
       </div>
     </div>
   </div>
+
+  <!-- Importa o JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
