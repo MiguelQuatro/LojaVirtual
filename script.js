@@ -64,26 +64,34 @@ function exibirMensagemAdicionado(nomeProduto) {
   mensagemDiv.classList.add('mensagem-adicionado');
   mensagemDiv.textContent = `${nomeProduto} adicionado ao carrinho!`;
 
-  // Estilo direto no JS (caso o CSS não tenha)
-  Object.assign(mensagemDiv.style, {
-    position: 'fixed',
-    bottom: '20px',
-    right: '20px',
-    background: 'rgba(40, 167, 69, 0.9)',
-    color: 'white',
-    padding: '12px 20px',
-    borderRadius: '8px',
-    fontWeight: 'bold',
-    zIndex: '9999',
-    boxShadow: '0 3px 8px rgba(0,0,0,0.3)',
-    transition: 'opacity 0.5s ease',
-  });
-
-  document.body.appendChild(mensagemDiv);
-
   // Remove a mensagem após 2 segundos
   setTimeout(() => {
     mensagemDiv.style.opacity = '0';
     setTimeout(() => mensagemDiv.remove(), 500);
   }, 2000);
+}
+//Botão Limpar//
+function limparCarrinho() {
+  total = 0;
+  quantidade = 0;
+
+  document.querySelector('.cart-count').innerText = quantidade;
+  document.querySelector('.cart-items').innerHTML = '';
+  document.querySelector('.cart-total').innerText = total.toFixed(2);
+}
+
+//Botão Finalizar Compra//
+function finalizarCompra() {
+  if (quantidade === 0) {
+    alert("Seu carrinho está vazio!");
+    return;
+  }
+
+  alert(`Compra finalizada!\nItens comprados: ${quantidade}\nTotal: R$ ${total.toFixed(2)}`);
+
+  //Limpa o carrinho após finalizar//
+  limparCarrinho();
+
+  //Fecha o modal//
+  toggleCart();
 }
