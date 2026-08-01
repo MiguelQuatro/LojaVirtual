@@ -43,13 +43,8 @@ Método 2 — servidor simples (recomendado):
 - Persistência do carrinho usando localStorage
 - Layout responsivo (para dispositivos móveis)
 
-## Como contribuir
-1. Fork deste repositório
-2. Crie uma branch com a sua feature: `git checkout -b feature/nome-da-feature`
-3. Faça commits claros e descritivos
-4. Abra um Pull Request explicando as mudanças
 
-## Melhorias sugeridas
+## Melhorias em Testes
 - Separar dados dos produtos em um JSON externo
 - Adicionar paginação e filtros avançados
 - Integrar com um back-end / API para carrinho e estoque
