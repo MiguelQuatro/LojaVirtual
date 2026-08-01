@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "name": "Ossinho",
+    "price": 25.9,
+    "inStock": true,
+    "image": "img/produto1.jpg",
+    "description": "Em estoque"
+  },
+  {
+    "id": 2,
+    "name": "Petiscos de Carne",
+    "price": 5.9,
+    "inStock": true,
+    "image": "img/produto2.jpg",
+    "description": "Em estoque"
+  },
+  {
+    "id": 3,
+    "name": "Mix Saudável",
+    "price": 6.0,
+    "inStock": true,
+    "image": "img/produto3.jpg",
+    "description": "Em estoque"
+  },
+  {
+    "id": 4,
+    "name": "Palitos de Limpeza Dental",
+    "price": 4.5,
+    "inStock": false,
+    "image": "img/produto4.jpg",
+    "description": "Fora de estoque"
+  },
+  {
+    "id": 5,
+    "name": "Degustação de Ração",
+    "price": 10.0,
+    "inStock": true,
+    "image": "img/produto5.jpg",
+    "description": "Em estoque"
+  },
+  {
+    "id": 6,
+    "name": "Ração Premier",
+    "price": 210.0,
+    "inStock": true,
+    "image": "img/produto6.jpg",
+    "description": "Em estoque"
+  },
+  {
+    "id": 7,
+    "name": "Ração para Idosos",
+    "price": 131.0,
+    "inStock": true,
+    "image": "img/produto7.jpg",
+    "description": "Em estoque"
+  },
+  {
+    "id": 8,
+    "name": "Ração para Filhotes",
+    "price": 124.6,
+    "inStock": true,
+    "image": "img/produto8.jpg",
+    "description": "Em estoque"
+  }
+]
