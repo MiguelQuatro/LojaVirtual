@@ -1,10 +1,3 @@
-
-Style · CSS
-/* =========================================================
-   DESIGN TOKENS
-   Centralizar cores/fontes em variáveis é o que permite mudar
-   a "cara" inteira do site trocando só os valores aqui em cima.
-   ========================================================= */
 :root {
   --cor-fundo: #EDE6D6;      /* kraft/papel */
   --cor-superficie: #FFFDF8; /* branco dos cards */
@@ -100,12 +93,7 @@ body {
   margin: 0;
 }
  
-/* =========================================================
-   CORREDORES (as duas fileiras que scrollam)
-   Técnica: flexbox + overflow-x auto + scroll-snap.
-   scroll-snap-type faz o navegador "encaixar" no próximo card
-   quando o usuário solta o scroll, em vez de parar no meio.
-   ========================================================= */
+
 .corredor {
   max-width: 1200px;
   margin: 0 auto 40px;
