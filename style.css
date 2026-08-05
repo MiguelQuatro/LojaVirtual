@@ -1,182 +1,468 @@
-    body {
-      font-family: Arial, sans-serif; /* Define a fonte da página */
-      background-image: url('img/fundoA.jpg'); /* Imagem de fundo */
-      background-size: cover; /* Faz a imagem cobrir toda a tela */
-      background-position: center; /* Centraliza a imagem */
-      background-repeat: no-repeat; /* Evita repetição da imagem */
-      text-align: center; /* Centraliza o texto */
-      margin: 0; /* Remove margens padrão do body */
-      padding: 0; /* Remove padding padrão do body */
-    }
 
-    h1 {
-    font-family: 'Poppins', sans-serif; /* fonte moderna */
-    font-weight: 700;
-    font-size: 3rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    background: linear-gradient(90deg, #ecc67fff, #fce879ff); /* degradê bonito */
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    -webkit-text-stroke: 1px black;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
-    }
-
-    .fundo-solido {
-      background-color: #ffbb00ff; /* Cor de fundo do elemento */
-      color: black; /* Cor do texto */
-      padding: 10px 20px; /* Espaçamento interno */
-      display: inline-block; /* Faz o elemento se comportar como bloco inline */
-      border-radius: 10px; /* Bordas arredondadas */
-    }
-
-    /* Cabeçalho e Carrinho */
-    header {
-      display: flex; /* Flexbox para alinhar itens */
-      justify-content: flex-end; /* Alinha itens à direita */
-      align-items: center; /* Alinha itens verticalmente */
-      padding: 10px 20px; /* Espaçamento interno */
-    }
-
-    .cart-icon-container {
-      position: relative; /* Permite posicionamento absoluto do contador */
-      cursor: pointer; /* Muda cursor para indicar interatividade */
-    }
-    .cart-icon {
-      width: 40px; /* Largura do ícone do carrinho */
-      height: auto; /* Mantém proporção */
-    }
-    .cart-count {
-      position: absolute; /* Posiciona em relação ao container */
-      top: -8px; /* Ajuste vertical */
-      right: -8px; /* Ajuste horizontal */
-      background: red; /* Cor de fundo do contador */
-      color: white; /* Cor do texto do contador */
-      border-radius: 50%; /* Deixa em forma de círculo */
-      padding: 2px 6px; /* Espaçamento interno do contador */
-      font-size: 12px; /* Tamanho da fonte */
-      font-weight: bold; /* Fonte em negrito */
-    }
-    /* Modal do Carrinho */
-    .cart-overlay {
-      display: none; /* Inicialmente oculto */
-      position: fixed; /* Fixa na tela inteira */
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5); /* Fundo semitransparente */
-      justify-content: center; /* Centraliza horizontalmente */
-      align-items: center; /* Centraliza verticalmente */
-      z-index: 2000; /* Fica acima dos outros elementos */
-    }
-    .cart-modal {
-      background: white; /* Fundo do modal */
-      padding: 20px; /* Espaçamento interno */
-      border-radius: 10px; /* Bordas arredondadas */
-      width: 300px; /* Largura fixa */
-      max-width: 90%; /* Responsivo */
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3); /* Sombra */
-    }
-    .cart-header {
-      display: flex; /* Flexbox para cabeçalho */
-      justify-content: space-between; /* Espaça itens */
-      align-items: center; /* Alinha verticalmente */
-    }
-
-    .close-cart {
-      cursor: pointer; /* Indica que é clicável */
-      font-size: 20px; /* Tamanho da fonte */
-      font-weight: bold; /* Negrito */
-    }
-
-    /* Grid de Produtos */
-    .container {
-      display: grid; /* Grid para organizar os cards */
-      grid-template-columns: repeat(4, 1fr); /* 4 colunas iguais */
-      gap: 20px; /* Espaçamento entre cards */
-      padding: 20px; /* Espaçamento interno */
-      max-width: 1000px; /* Largura máxima da área */
-      margin: 0 auto; /* Centraliza horizontalmente */
-    }
-
-
-    .card {
-      background: lightblue; /* Fundo do card */
-      border-radius: 10px; /* Bordas arredondadas */
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2); /* Sombra do card */
-      padding: 5px; /* Espaçamento interno */
-      display: flex; /* Flexbox para alinhar conteúdo */
-      flex-direction: column; /* Itens em coluna */
-      align-items: center; /* Centraliza itens */
-      transition: transform 0.2s ease-in-out; /* Animação ao passar mouse */
-    }
-    .card:hover {
-      transform: scale(1.05); /* Aumenta levemente ao passar o mouse */
-    }
-    .card img {
-      width: 100%; /* Largura total do card */
-      max-width: 150px; /* Limita tamanho da imagem */
-      border-radius: 10px; /* Bordas arredondadas */
-    }
-    .cart-items {
-      max-height: 200px; /* limite de altura */
-      overflow-y: auto;  /* ativa a barra de rolagem */
-       padding-right: 5px;
-    }
-
-
-    button {
-      margin-top: 8px; /* Espaço acima do botão */
-      padding: 8px 12px; /* Espaçamento interno */
-      border: none; /* Remove borda padrão */
-      border-radius: 5px; /* Bordas arredondadas */
-      background-color: orange; /* Cor do botão */
-      color: white; /* Cor do texto */
-      font-weight: bold; /* Texto em negrito */
-      cursor: pointer; /* Indica que é clicável */
-      transition: background 0.3s; /* Animação ao mudar cor */
-    }
-    button:hover:enabled {
-      background-color: darkred; /* Cor ao passar mouse */
-    }
-    button:disabled {
-      background-color: gray; /* Cor botão desabilitado */
-      cursor: not-allowed; /* Cursor proibido */
-    }
-
-    .mensagem-adicionado {
-      position: fixed;
-      top: 15%;
-      right: 5%;
-      background-color: #28a745;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: bold;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      z-index: 9999;
-      animation: fadeInOut 2s ease;
-    }
-
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: translateY(-20px); }
-      10%, 90% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-20px); }
-    }
-
-    .limpar-carrinho {
-      margin-top: 10px;
-      background-color: #dc3545;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s ease;
-    }
-
-    .limpar-carrinho:hover {
-      background-color: #a71d2a;
-    }
+Style · CSS
+/* =========================================================
+   DESIGN TOKENS
+   Centralizar cores/fontes em variáveis é o que permite mudar
+   a "cara" inteira do site trocando só os valores aqui em cima.
+   ========================================================= */
+:root {
+  --cor-fundo: #EDE6D6;      /* kraft/papel */
+  --cor-superficie: #FFFDF8; /* branco dos cards */
+  --cor-primaria: #2F4B3C;   /* verde-pinho: marca, títulos */
+  --cor-primaria-escura: #1F3329;
+  --cor-acento: #E0A438;     /* mostarda: preço, CTA */
+  --cor-acento-escuro: #B9862A;
+  --cor-alerta: #B4482F;     /* rust: fora de estoque, limpar */
+  --cor-sucesso: #3E7C5A;
+  --cor-tinta: #24291F;      /* texto */
+  --cor-tinta-suave: #5B5A4D;
+ 
+  --fonte-titulo: 'Fredoka', sans-serif;
+  --fonte-corpo: 'Inter', sans-serif;
+ 
+  --raio: 16px;
+  --sombra: 0 6px 20px rgba(36, 41, 31, 0.12);
+}
+ 
+* { box-sizing: border-box; }
+ 
+body {
+  margin: 0;
+  font-family: var(--fonte-corpo);
+  background-color: var(--cor-fundo);
+  color: var(--cor-tinta);
+}
+ 
+/* =========================================================
+   CABEÇALHO
+   ========================================================= */
+.topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background: var(--cor-superficie);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+ 
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--fonte-titulo);
+  font-weight: 600;
+  color: var(--cor-primaria);
+  font-size: 1.2rem;
+}
+.marca-icone { font-size: 1.4rem; }
+ 
+.cart-icon-container {
+  position: relative;
+  cursor: pointer;
+}
+.cart-icon { width: 34px; height: auto; }
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: var(--cor-alerta);
+  color: white;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+ 
+/* =========================================================
+   HERO
+   ========================================================= */
+.hero {
+  text-align: center;
+  padding: 56px 20px 32px;
+}
+.hero h1 {
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  color: var(--cor-primaria);
+  margin: 0 0 12px;
+}
+.subtitulo {
+  color: var(--cor-tinta-suave);
+  font-size: 1.05rem;
+  margin: 0;
+}
+ 
+/* =========================================================
+   CORREDORES (as duas fileiras que scrollam)
+   Técnica: flexbox + overflow-x auto + scroll-snap.
+   scroll-snap-type faz o navegador "encaixar" no próximo card
+   quando o usuário solta o scroll, em vez de parar no meio.
+   ========================================================= */
+.corredor {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  padding: 0 24px;
+}
+.corredor-titulo {
+  font-family: var(--fonte-titulo);
+  color: var(--cor-primaria);
+  font-size: 1.3rem;
+  margin: 0 0 14px 4px;
+}
+ 
+.trilho {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 12px 4px 20px;
+  scroll-snap-type: x mandatory; /* trava o scroll em cada card */
+  scroll-behavior: smooth;
+}
+/* Barra de scroll discreta (Chrome/Edge) */
+.trilho::-webkit-scrollbar { height: 8px; }
+.trilho::-webkit-scrollbar-thumb {
+  background: var(--cor-acento);
+  border-radius: 10px;
+}
+.trilho::-webkit-scrollbar-track { background: transparent; }
+ 
+/* =========================================================
+   CARD DE PRODUTO
+   ========================================================= */
+.card {
+  position: relative;
+  flex: 0 0 220px;       /* não encolhe: cada card tem largura fixa */
+  scroll-snap-align: start;
+  background: var(--cor-superficie);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  padding: 16px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(36, 41, 31, 0.18);
+}
+ 
+.card-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--cor-fundo);
+}
+.card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+ 
+/* Etiqueta de preço "pendurada" no canto do card — elemento assinatura */
+.etiqueta-preco {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--cor-acento);
+  color: var(--cor-primaria-escura);
+  font-family: var(--fonte-titulo);
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 999px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+ 
+.card h3 {
+  font-family: var(--fonte-titulo);
+  font-size: 1.05rem;
+  margin: 12px 0 4px;
+  color: var(--cor-tinta);
+}
+ 
+.status { font-size: 0.85rem; margin: 0 0 10px; font-weight: 600; }
+.status.disponivel { color: var(--cor-sucesso); }
+.status.indisponivel { color: var(--cor-alerta); }
+ 
+.comprar-btn {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--cor-primaria);
+  color: white;
+  font-family: var(--fonte-corpo);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s ease;
+}
+.comprar-btn:hover:enabled { background: var(--cor-primaria-escura); }
+.comprar-btn:disabled {
+  background: #D8D3C4;
+  color: #8B8879;
+  cursor: not-allowed;
+}
+ 
+/* =========================================================
+   OVERLAYS / MODAIS (genérico — reutilizado por carrinho,
+   pagamento e recibo)
+   ========================================================= */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(36, 41, 31, 0.55);
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 16px;
+}
+.overlay.aberto { display: flex; } /* controlado via JS, ver script.js */
+ 
+.modal {
+  background: var(--cor-superficie);
+  border-radius: var(--raio);
+  width: 380px;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  animation: subirModal .25s ease;
+}
+@keyframes subirModal {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+ 
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.modal-header h2 {
+  font-family: var(--fonte-titulo);
+  color: var(--cor-primaria);
+  margin: 0;
+}
+.fechar {
+  cursor: pointer;
+  font-size: 22px;
+  color: var(--cor-tinta-suave);
+  line-height: 1;
+}
+.fechar:hover { color: var(--cor-alerta); }
+ 
+/* ---- Carrinho ---- */
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--cor-fundo);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+.cart-item .remover {
+  cursor: pointer;
+  color: var(--cor-alerta);
+  font-weight: 700;
+  padding: 0 4px;
+}
+.carrinho-vazio-msg {
+  display: none;
+  text-align: center;
+  color: var(--cor-tinta-suave);
+  padding: 20px 0;
+}
+ 
+.modal-footer { margin-top: 16px; }
+.total-linha {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--fonte-titulo);
+  font-size: 1.1rem;
+  color: var(--cor-primaria);
+  margin-bottom: 14px;
+}
+ 
+.btn-primario, .btn-secundario {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: filter .2s ease;
+}
+.btn-primario { background: var(--cor-acento); color: var(--cor-primaria-escura); }
+.btn-primario:hover { filter: brightness(0.95); }
+.btn-secundario { background: transparent; color: var(--cor-alerta); border: 1.5px solid var(--cor-alerta); }
+.btn-secundario:hover { background: rgba(180, 72, 47, 0.08); }
+ 
+/* ---- Cartão de pagamento (visual estilo cartão de crédito) ---- */
+.cartao-visual {
+  background: linear-gradient(135deg, var(--cor-primaria), var(--cor-primaria-escura));
+  color: white;
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 18px;
+  font-family: var(--fonte-corpo);
+}
+.cartao-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+.cartao-numero {
+  font-size: 1.15rem;
+  letter-spacing: 2px;
+  margin-bottom: 18px;
+  font-variant-numeric: tabular-nums;
+}
+.cartao-baixo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+.cartao-label {
+  display: block;
+  font-size: 0.65rem;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+ 
+.form-pagamento { display: flex; flex-direction: column; gap: 12px; }
+.form-pagamento label {
+  font-size: 0.82rem;
+  color: var(--cor-tinta-suave);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.form-pagamento input {
+  border: 1.5px solid #DDD6C4;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.95rem;
+  font-family: var(--fonte-corpo);
+}
+.form-pagamento input:focus {
+  outline: none;
+  border-color: var(--cor-acento);
+}
+.form-linha { display: flex; gap: 12px; }
+.form-linha label { flex: 1; }
+ 
+.erro-pagamento {
+  color: var(--cor-alerta);
+  font-size: 0.82rem;
+  min-height: 18px;
+  margin: 0;
+}
+ 
+.resumo-pagamento {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--fonte-titulo);
+  color: var(--cor-primaria);
+  padding-top: 8px;
+  border-top: 1px dashed #DDD6C4;
+}
+.aviso-fake {
+  font-size: 0.72rem;
+  color: var(--cor-tinta-suave);
+  text-align: center;
+  margin-top: 4px;
+}
+ 
+/* ---- Recibo / confirmação ---- */
+.modal-recibo { text-align: center; }
+.recibo-selo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--cor-sucesso);
+  color: white;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+}
+.recibo-sub { color: var(--cor-tinta-suave); margin-top: -6px; }
+.recibo-itens {
+  text-align: left;
+  background: var(--cor-fundo);
+  border-radius: 10px;
+  padding: 12px;
+  margin: 16px 0;
+  font-size: 0.88rem;
+  max-height: 160px;
+  overflow-y: auto;
+}
+.recibo-total {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--fonte-titulo);
+  color: var(--cor-primaria);
+  margin-bottom: 16px;
+}
+ 
+/* =========================================================
+   TOAST "adicionado ao carrinho"
+   ========================================================= */
+.toast {
+  position: fixed;
+  top: 90px;
+  right: 24px;
+  background: var(--cor-primaria);
+  color: white;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: var(--sombra);
+  z-index: 3000;
+  animation: entraSai 2.2s ease forwards;
+}
+@keyframes entraSai {
+  0%   { opacity: 0; transform: translateY(-14px); }
+  12%, 85% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-14px); }
+}
+ 
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+@media (max-width: 600px) {
+  .topo { padding: 14px 18px; }
+  .card { flex-basis: 170px; }
+  .modal { width: 100%; }
+}
+ 
