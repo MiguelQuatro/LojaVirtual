@@ -322,6 +322,9 @@ function renderCarrinho() {
   // contador mostra a soma das quantidades, não o número de linhas
   const totalQuantidade = carrinho.reduce((s, it) => s + (it.quantidade || 0), 0);
   countEl.textContent = totalQuantidade;
+
+  // se o carrinho ficar vazio, escondemos o botão flutuante
+  if (totalQuantidade === 0) hideFloatingActions();
 }
 
 function calcularTotal() {
@@ -337,18 +340,36 @@ function limparCarrinho() {
   salvarCarrinho();
   renderCarrinho();
   atualizarCards();
+  hideFloatingActions();
 }
 
 // helpers para abrir/fechar o carrinho sem alternar o estado
 function openCart() {
   document.body.classList.add('carrinho-aberto');
+  hideFloatingActions();
 }
 function closeCart() {
   document.body.classList.remove('carrinho-aberto');
+  // ao fechar para continuar comprando, mostramos os botões laterais
+  // somente se houver itens no carrinho
+  const totalQuantidade = carrinho.reduce((s, it) => s + (it.quantidade || 0), 0);
+  if (totalQuantidade > 0) showFloatingActions();
 }
 
 function toggleCart() {
   document.body.classList.toggle('carrinho-aberto');
+}
+
+// mostrar/esconder ações flutuantes laterais
+function showFloatingActions() {
+  const el = document.getElementById('floatingActions');
+  if (!el) return;
+  el.classList.add('aberto');
+}
+function hideFloatingActions() {
+  const el = document.getElementById('floatingActions');
+  if (!el) return;
+  el.classList.remove('aberto');
 }
 
 function abrirPagamento() {
@@ -484,7 +505,7 @@ function atualizarCards() {
       badge.textContent = `-${promocao.desconto}%`;
       const precoOriginal = parseFloat(card.dataset.preco);
       const precoAgora = precoOriginal * (1 - promocao.desconto / 100);
-      etiqueta.innerHTML = `<span class=\"preco-antes\">R$ ${precoOriginal.toFixed(2).replace('.', ',')}</span> <span class=\"preco-agora\">R$ ${precoAgora.toFixed(2).replace('.', ',')}</span>`;
+      etiqueta.innerHTML = `<span class=\\"preco-antes\\">R$ ${precoOriginal.toFixed(2).replace('.', ',')}</span> <span class=\\"preco-agora\\">R$ ${precoAgora.toFixed(2).replace('.', ',')}</span>`;
     } else {
       const badge = card.querySelector('.badge-promocao'); if (badge) badge.remove();
       etiqueta.textContent = `R$ ${parseFloat(card.dataset.preco).toFixed(2).replace('.', ',')}`;
