@@ -9,7 +9,14 @@ document.addEventListener('click', (evento) => {
   const nome = card.dataset.nome;
   const preco = parseFloat(card.dataset.preco); // lendo dado estruturado, não texto solto
 
-  carrinho.push({ id: crypto.randomUUID(), nome, preco });
+  // se já existe, incrementa quantidade; senão cria novo item com quantidade 1
+  const existente = carrinho.find(item => item.nome === nome);
+  if (existente) {
+    existente.quantidade += 1;
+  } else {
+    carrinho.push({ nome, preco, quantidade: 1 });
+  }
+
   salvarCarrinho();
   renderCarrinho();
   exibirToast(`${nome} adicionado ao carrinho!`);
@@ -20,8 +27,16 @@ document.addEventListener('click', (evento) => {
   const remover = evento.target.closest('.remover');
   if (!remover) return;
 
-  const id = remover.dataset.id;
-  carrinho = carrinho.filter(item => item.id !== id);
+  const nome = remover.dataset.nome;
+  const item = carrinho.find(i => i.nome === nome);
+  if (!item) return;
+
+  // remove uma unidade; se ficar 0, remove o produto do carrinho
+  item.quantidade -= 1;
+  if (item.quantidade <= 0) {
+    carrinho = carrinho.filter(i => i.nome !== nome);
+  }
+
   salvarCarrinho();
   renderCarrinho();
 });
@@ -42,10 +57,11 @@ function renderCarrinho() {
     carrinho.forEach(item => {
       const linha = document.createElement('div');
       linha.className = 'cart-item';
-      // template literal: junta HTML e variáveis de forma legível
+      // mostra quantidade e subtotal
+      const subtotal = (item.preco * item.quantidade).toFixed(2).replace('.', ',');
       linha.innerHTML = `
-        <span>${item.nome} — R$ ${item.preco.toFixed(2).replace('.', ',')}</span>
-        <span class="remover" data-id="${item.id}">&times;</span>
+        <span>${item.nome} (${item.quantidade}) — R$ ${item.preco.toFixed(2).replace('.', ',')} <small style="opacity:.8">(R$ ${subtotal})</small></span>
+        <span class="remover" data-nome="${item.nome}">&times;</span>
       `;
       lista.appendChild(linha);
     });
@@ -53,11 +69,14 @@ function renderCarrinho() {
 
   const total = calcularTotal();
   totalEl.textContent = total.toFixed(2).replace('.', ',');
-  countEl.textContent = carrinho.length;
+
+  // contador mostra a soma das quantidades, não o número de linhas
+  const totalQuantidade = carrinho.reduce((s, it) => s + (it.quantidade || 0), 0);
+  countEl.textContent = totalQuantidade;
 }
 
 function calcularTotal() {
-  return carrinho.reduce((soma, item) => soma + item.preco, 0);
+  return carrinho.reduce((soma, item) => soma + item.preco * (item.quantidade || 1), 0);
 }
 
 
@@ -66,7 +85,17 @@ function salvarCarrinho() {
 }
 function carregarCarrinhoSalvo() {
   try {
-    return JSON.parse(localStorage.getItem('boutique-carrinho')) || [];
+    const raw = JSON.parse(localStorage.getItem('boutique-carrinho')) || [];
+    // MIGRAÇÃO: formato antigo tinha items individuais com 'id' e sem 'quantidade'
+    if (raw.length && raw[0].id && raw[0].nome && raw[0].preco && !raw[0].quantidade) {
+      const map = new Map();
+      raw.forEach(item => {
+        if (!map.has(item.nome)) map.set(item.nome, { nome: item.nome, preco: item.preco, quantidade: 0 });
+        map.get(item.nome).quantidade += 1;
+      });
+      return Array.from(map.values());
+    }
+    return raw;
   } catch {
     return [];
   }
@@ -86,8 +115,10 @@ function toggleCart() {
 }
 
 function abrirPagamento() {
-  if (carrinho.length === 0) {
-    exibirToast('Seu carrinho está vazio!');
+  // agora checamos quantidade total
+  const totalQuantidade = carrinho.reduce((s, it) => s + (it.quantidade || 0), 0);
+  if (totalQuantidade === 0) {
+    exibirToast('Seu carrinho está vazio! Adicione produtos para prosseguir.');
     return;
   }
   document.body.classList.remove('carrinho-aberto');
@@ -168,7 +199,7 @@ document.getElementById('formPagamento').addEventListener('submit', (evento) => 
 function confirmarPedido() {
   const reciboItens = document.getElementById('reciboItens');
   reciboItens.innerHTML = carrinho
-    .map(item => `<p>${item.nome} — R$ ${item.preco.toFixed(2).replace('.', ',')}</p>`)
+    .map(item => `<p>${item.nome} (${item.quantidade}) — R$ ${item.preco.toFixed(2).replace('.', ',')} — R$ ${(item.preco*item.quantidade).toFixed(2).replace('.', ',')}</p>`)
     .join('');
   document.getElementById('reciboTotal').textContent =
     calcularTotal().toFixed(2).replace('.', ',');
