@@ -1,65 +1,69 @@
 let carrinho = carregarCarrinhoSalvo();
-
+ 
 document.addEventListener('click', (evento) => {
-  const botao = evento.target.closest(1.comprar-btn');
+  const botao = evento.target.closest('.comprar-btn');
   if (!botao || botao.disabled) return;
-
-  const card = botao.closest('.card);
+ 
+  const card = botao.closest('.card');
   const nome = card.dataset.nome;
-  const preco = parseFloat(card.dataset.preco); //Leitura dados estruturados
-
-  carrinho.push(ìd: cryto.randomUUID(), nome, preco });
+  const preco = parseFloat(card.dataset.preco); // lendo dado estruturado, não texto solto
+ 
+  carrinho.push({ id: crypto.randomUUID(), nome, preco });
   salvarCarrinho();
   renderCarrinho();
-  exibirToast(`${nome} adicionado ao carrinho"`);
+  exibirToast(`${nome} adicionado ao carrinho!`);
 });
-
-/* Removendo um item específico (delegação também) */
+ 
+/* Remover um item específico (delegação também, pro botão "×" de cada linha) */
 document.addEventListener('click', (evento) => {
   const remover = evento.target.closest('.remover');
   if (!remover) return;
-
+ 
   const id = remover.dataset.id;
   carrinho = carrinho.filter(item => item.id !== id);
   salvarCarrinho();
   renderCarrinho();
 });
+ 
 
 function renderCarrinho() {
   const lista = document.querySelector('.cart-items');
   const vazioMsg = document.querySelector('.carrinho-vazio-msg');
-  const totalEl = document.querySelector('.cart-total");
+  const totalEl = document.querySelector('.cart-total');
   const countEl = document.querySelector('.cart-count');
-
+ 
   lista.innerHTML = '';
-
+ 
   if (carrinho.length === 0) {
     vazioMsg.style.display = 'block';
   } else {
-    vazioMsg.style.display = 'nome';
+    vazioMsg.style.display = 'none';
     carrinho.forEach(item => {
       const linha = document.createElement('div');
       linha.className = 'cart-item';
-      // template literal: incorpa HTML de forma legível
+      // template literal: junta HTML e variáveis de forma legível
       linha.innerHTML = `
-        <span>${item.nome} - R$ ${item.preco.toFixed(2).REPLACE('.', '.')}</span>
-        <span class="remover" data-id"${item.id}">&times;</span>
-        `;
-        lista.appendChild(linha);
+        <span>${item.nome} — R$ ${item.preco.toFixed(2).replace('.', ',')}</span>
+        <span class="remover" data-id="${item.id}">&times;</span>
+      `;
+      lista.appendChild(linha);
     });
   }
-
+ 
   const total = calcularTotal();
   totalEl.textContent = total.toFixed(2).replace('.', ',');
   countEl.textContent = carrinho.length;
 }
-
+ 
 function calcularTotal() {
   return carrinho.reduce((soma, item) => soma + item.preco, 0);
 }
-
+ 
+/* =========================================================
+   PERSISTÊNCIA — localStorage
+   ========================================================= */
 function salvarCarrinho() {
- localStorage.setItem('boutique-carrinho', JSON.stringify(carrinho));
+  localStorage.setItem('boutique-carrinho', JSON.stringify(carrinho));
 }
 function carregarCarrinhoSalvo() {
   try {
@@ -68,19 +72,22 @@ function carregarCarrinhoSalvo() {
     return [];
   }
 }
-
+ 
 function limparCarrinho() {
   carrinho = [];
   salvarCarrinho();
   renderCarrinho();
 }
-
+ 
+/* =========================================================
+   ABRIR/FECHAR MODAIS
+   ========================================================= */
 function toggleCart() {
-  document.getElementById('cartOverlay').classList.toggle ('aberto');
+  document.getElementById('cartOverlay').classList.toggle('aberto');
 }
-
+ 
 function abrirPagamento() {
-  if (carrinho.lenth === 0) {
+  if (carrinho.length === 0) {
     exibirToast('Seu carrinho está vazio!');
     return;
   }
@@ -89,14 +96,18 @@ function abrirPagamento() {
   document.getElementById('totalPagamento').textContent =
     calcularTotal().toFixed(2).replace('.', ',');
 }
- function fecharPagamento() {
-   document.getElementById('paymentOverlay').classList.remove('aberto');
- }
-
+ 
+function fecharPagamento() {
+  document.getElementById('paymentOverlay').classList.remove('aberto');
+}
+ 
 function fecharRecibo() {
   document.getElementById('reciboOverlay').classList.remove('aberto');
- }
-
+}
+ 
+/* =========================================================
+   CARTÃO DE PAGAMENTO — preview em tempo real + máscaras
+   ========================================================= */
 const inputNome = document.getElementById('inputNome');
 const inputNumero = document.getElementById('inputNumero');
 const inputValidade = document.getElementById('inputValidade');
@@ -130,7 +141,10 @@ inputValidade.addEventListener('input', () => {
 inputCvv.addEventListener('input', () => {
   inputCvv.value = inputCvv.value.replace(/\D/g, '').slice(0, 3);
 });
-
+ 
+/* =========================================================
+  SUBMISSÃO DO PAGAMENTO
+   ========================================================= */
 document.getElementById('formPagamento').addEventListener('submit', (evento) => {
   evento.preventDefault();
   const erroEl = document.getElementById('erroPagamento');
@@ -175,9 +189,10 @@ function confirmarPedido() {
   document.getElementById('previewValidade').textContent = 'MM/AA';
   limparCarrinho();
 }
-
-// Toast "adc ao carrinho"
-
+ 
+/* =========================================================
+    TOAST "adicionado ao carrinho"
+   ========================================================= */
 function exibirToast(mensagem) {
   const toast = document.createElement('div');
   toast.className = 'toast';
@@ -191,3 +206,4 @@ function exibirToast(mensagem) {
    INICIALIZAÇÃO
    ========================================================= */
 renderCarrinho();
+ 
