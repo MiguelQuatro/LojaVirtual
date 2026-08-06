@@ -18,6 +18,20 @@ function idPorNome(nome) {
   return c ? c.dataset.id : null;
 }
 
+// ---------- Injeta botão + em cada card (adiciona direto ao carrinho) ----------
+function injectAddOneButtons() {
+  todosOsCards().forEach(card => {
+    if (card.querySelector('.comprar-plus')) return;
+    const btn = document.createElement('button');
+    btn.className = 'comprar-plus';
+    btn.type = 'button';
+    btn.title = 'Adicionar 1 ao carrinho';
+    btn.textContent = '+';
+    // append ao card (posicionado via CSS)
+    card.appendChild(btn);
+  });
+}
+
 // ---------- Estoque (migração para usar ids) ----------
 function carregarEstoqueSalvo() {
   try {
@@ -128,6 +142,33 @@ function salvarCarrinho() {
 // ---------- Manipulação do carrinho (agora por id) ----------
 
 document.addEventListener('click', (evento) => {
+  // botão '+' direto no card (adiciona 1 imediatamente) - Classe: .comprar-plus
+  const plusBtn = evento.target.closest('.comprar-plus');
+  if (plusBtn && !plusBtn.disabled) {
+    const card = plusBtn.closest('.card');
+    const id = card.dataset.id;
+    const nome = card.dataset.nome;
+    const preco = parseFloat(card.dataset.preco);
+
+    const existente = carrinho.find(item => item.id === id);
+    const quantidadeNoCarrinho = existente ? existente.quantidade : 0;
+    const disponivel = (estoque[id] || 0) - quantidadeNoCarrinho;
+
+    if (disponivel <= 0) {
+      exibirToast(`Estoque insuficiente para ${nome}.`);
+      return;
+    }
+
+    if (existente) existente.quantidade += 1;
+    else carrinho.push({ id, nome, preco, quantidade: 1 });
+
+    salvarCarrinho();
+    renderCarrinho();
+    atualizarCards();
+    exibirToast(`${nome} adicionado ao carrinho!`);
+    return;
+  }
+
   // botão adicionar do card
   const botao = evento.target.closest('.comprar-btn');
   if (botao && !botao.disabled) {
@@ -360,6 +401,7 @@ function atualizarCards() {
     const id = card.dataset.id;
     const nome = card.dataset.nome;
     const botao = card.querySelector('.comprar-btn');
+    const plusBtn = card.querySelector('.comprar-plus');
     const statusEl = card.querySelector('.status');
     const etiqueta = card.querySelector('.etiqueta-preco');
 
@@ -370,14 +412,14 @@ function atualizarCards() {
       statusEl.classList.remove('disponivel');
       statusEl.classList.add('indisponivel');
       statusEl.textContent = 'Fora de estoque';
-      botao.disabled = true;
-      botao.textContent = 'Indisponível';
+      if (botao) { botao.disabled = true; botao.textContent = 'Indisponível'; }
+      if (plusBtn) plusBtn.disabled = true;
     } else {
       statusEl.classList.remove('indisponivel');
       statusEl.classList.add('disponivel');
       statusEl.textContent = `Em estoque — ${disponivel} disponíveis`;
-      botao.disabled = false;
-      botao.textContent = 'Adicionar';
+      if (botao) { botao.disabled = false; botao.textContent = 'Adicionar'; }
+      if (plusBtn) plusBtn.disabled = false;
     }
 
     // promoção: badge e preço
@@ -405,6 +447,7 @@ function exibirToast(mensagem) {
 }
 
 // ---------- INICIALIZAÇÃO ----------
+injectAddOneButtons();
 inicializarEstoque();
 inicializarPromocao();
 renderCarrinho();
