@@ -1,39 +1,40 @@
 let carrinho = carregarCarrinhoSalvo();
- 
+
+
 document.addEventListener('click', (evento) => {
   const botao = evento.target.closest('.comprar-btn');
   if (!botao || botao.disabled) return;
- 
+
   const card = botao.closest('.card');
   const nome = card.dataset.nome;
   const preco = parseFloat(card.dataset.preco); // lendo dado estruturado, não texto solto
- 
+
   carrinho.push({ id: crypto.randomUUID(), nome, preco });
   salvarCarrinho();
   renderCarrinho();
   exibirToast(`${nome} adicionado ao carrinho!`);
 });
- 
+
 /* Remover um item específico (delegação também, pro botão "×" de cada linha) */
 document.addEventListener('click', (evento) => {
   const remover = evento.target.closest('.remover');
   if (!remover) return;
- 
+
   const id = remover.dataset.id;
   carrinho = carrinho.filter(item => item.id !== id);
   salvarCarrinho();
   renderCarrinho();
 });
- 
+
 
 function renderCarrinho() {
   const lista = document.querySelector('.cart-items');
   const vazioMsg = document.querySelector('.carrinho-vazio-msg');
   const totalEl = document.querySelector('.cart-total');
   const countEl = document.querySelector('.cart-count');
- 
+
   lista.innerHTML = '';
- 
+
   if (carrinho.length === 0) {
     vazioMsg.style.display = 'block';
   } else {
@@ -49,19 +50,17 @@ function renderCarrinho() {
       lista.appendChild(linha);
     });
   }
- 
+
   const total = calcularTotal();
   totalEl.textContent = total.toFixed(2).replace('.', ',');
   countEl.textContent = carrinho.length;
 }
- 
+
 function calcularTotal() {
   return carrinho.reduce((soma, item) => soma + item.preco, 0);
 }
- 
-/* =========================================================
-   PERSISTÊNCIA — localStorage
-   ========================================================= */
+
+
 function salvarCarrinho() {
   localStorage.setItem('boutique-carrinho', JSON.stringify(carrinho));
 }
@@ -72,62 +71,60 @@ function carregarCarrinhoSalvo() {
     return [];
   }
 }
- 
+
 function limparCarrinho() {
   carrinho = [];
   salvarCarrinho();
   renderCarrinho();
 }
- 
-/* =========================================================
-   ABRIR/FECHAR MODAIS
-   ========================================================= */
+
+
 function toggleCart() {
-  document.getElementById('cartOverlay').classList.toggle('aberto');
+  // a sidebar e o backdrop são controlados só por essa classe no <body>;
+  // veja as regras "body.carrinho-aberto ..." no style.css
+  document.body.classList.toggle('carrinho-aberto');
 }
- 
+
 function abrirPagamento() {
   if (carrinho.length === 0) {
     exibirToast('Seu carrinho está vazio!');
     return;
   }
-  document.getElementById('cartOverlay').classList.remove('aberto');
+  document.body.classList.remove('carrinho-aberto');
   document.getElementById('paymentOverlay').classList.add('aberto');
   document.getElementById('totalPagamento').textContent =
     calcularTotal().toFixed(2).replace('.', ',');
 }
- 
+
 function fecharPagamento() {
   document.getElementById('paymentOverlay').classList.remove('aberto');
 }
- 
+
 function fecharRecibo() {
   document.getElementById('reciboOverlay').classList.remove('aberto');
 }
- 
-/* =========================================================
-   CARTÃO DE PAGAMENTO — preview em tempo real + máscaras
-   ========================================================= */
+
+
 const inputNome = document.getElementById('inputNome');
 const inputNumero = document.getElementById('inputNumero');
 const inputValidade = document.getElementById('inputValidade');
 const inputCvv = document.getElementById('inputCvv');
- 
+
 inputNome.addEventListener('input', () => {
   document.getElementById('previewNome').textContent =
     inputNome.value.trim() ? inputNome.value.toUpperCase() : 'NOME COMPLETO';
 });
- 
+
 inputNumero.addEventListener('input', () => {
   // remove tudo que não é dígito, corta em 16, e insere espaço a cada 4
   let digitos = inputNumero.value.replace(/\D/g, '').slice(0, 16);
   let formatado = digitos.replace(/(.{4})/g, '$1 ').trim();
   inputNumero.value = formatado;
- 
+
   document.getElementById('previewNumero').textContent =
     formatado.padEnd(19, '•').slice(0, 19) || '•••• •••• •••• ••••';
 });
- 
+
 inputValidade.addEventListener('input', () => {
   // transforma "1225" em "12/25" automaticamente
   let digitos = inputValidade.value.replace(/\D/g, '').slice(0, 4);
@@ -137,18 +134,15 @@ inputValidade.addEventListener('input', () => {
   inputValidade.value = digitos;
   document.getElementById('previewValidade').textContent = digitos || 'MM/AA';
 });
- 
+
 inputCvv.addEventListener('input', () => {
   inputCvv.value = inputCvv.value.replace(/\D/g, '').slice(0, 3);
 });
- 
-/* =========================================================
-  SUBMISSÃO DO PAGAMENTO
-   ========================================================= */
+
 document.getElementById('formPagamento').addEventListener('submit', (evento) => {
   evento.preventDefault();
   const erroEl = document.getElementById('erroPagamento');
- 
+
   const numeroLimpo = inputNumero.value.replace(/\s/g, '');
   if (inputNome.value.trim().length < 3) {
     erroEl.textContent = 'Informe o nome como está no cartão.';
@@ -166,11 +160,11 @@ document.getElementById('formPagamento').addEventListener('submit', (evento) => 
     erroEl.textContent = 'CVV precisa ter 3 dígitos.';
     return;
   }
- 
+
   erroEl.textContent = '';
   confirmarPedido();
 });
- 
+
 function confirmarPedido() {
   const reciboItens = document.getElementById('reciboItens');
   reciboItens.innerHTML = carrinho
@@ -178,10 +172,10 @@ function confirmarPedido() {
     .join('');
   document.getElementById('reciboTotal').textContent =
     calcularTotal().toFixed(2).replace('.', ',');
- 
+
   fecharPagamento();
   document.getElementById('reciboOverlay').classList.add('aberto');
- 
+
   // limpa formulário e carrinho pra próxima compra
   document.getElementById('formPagamento').reset();
   document.getElementById('previewNome').textContent = 'NOME COMPLETO';
@@ -189,9 +183,9 @@ function confirmarPedido() {
   document.getElementById('previewValidade').textContent = 'MM/AA';
   limparCarrinho();
 }
- 
+
 /* =========================================================
-    TOAST "adicionado ao carrinho"
+   TOAST "adicionado ao carrinho"
    ========================================================= */
 function exibirToast(mensagem) {
   const toast = document.createElement('div');
@@ -201,9 +195,8 @@ function exibirToast(mensagem) {
   // a animação CSS dura 2.2s; removemos o elemento depois
   setTimeout(() => toast.remove(), 2200);
 }
- 
+
 /* =========================================================
    INICIALIZAÇÃO
    ========================================================= */
 renderCarrinho();
- 
