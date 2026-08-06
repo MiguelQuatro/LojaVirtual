@@ -209,6 +209,30 @@ body {
   cursor: not-allowed;
 }
 
+/* Promoção badge */
+.badge-promocao {
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  background: #C83D3D;
+  color: white;
+  padding: 6px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+}
+.preco-antes {
+  text-decoration: line-through;
+  opacity: 0.85;
+  font-size: 0.8rem;
+  margin-right: 6px;
+}
+.preco-agora {
+  color: var(--cor-acento-escuro);
+  font-weight: 700;
+}
+
 /* =========================================================
    OVERLAYS / MODAIS (genérico — reutilizado por carrinho,
    pagamento e recibo)
