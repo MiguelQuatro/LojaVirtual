@@ -152,6 +152,30 @@ function salvarCarrinho() {
   localStorage.setItem('boutique-carrinho', JSON.stringify(carrinho));
 }
 
+// ---------- Pequenas funções de UI: abrir/fechar carrinho e ações flutuantes ----------
+function openCart() {
+  document.body.classList.add('carrinho-aberto');
+  // quando abrimos o carrinho, escondemos as ações flutuantes
+  hideFloatingActions();
+}
+function closeCart() {
+  document.body.classList.remove('carrinho-aberto');
+  // ao fechar via "Continuar comprando" mostramos as ações flutuantes
+  showFloatingActions();
+}
+function showFloatingActions() {
+  const el = document.getElementById('floatingActions');
+  if (!el) return;
+  el.classList.add('aberto');
+  el.setAttribute('aria-hidden', 'false');
+}
+function hideFloatingActions() {
+  const el = document.getElementById('floatingActions');
+  if (!el) return;
+  el.classList.remove('aberto');
+  el.setAttribute('aria-hidden', 'true');
+}
+
 // ---------- Manipulação do carrinho (agora por id) ----------
 
 document.addEventListener('click', (evento) => {
@@ -179,6 +203,8 @@ document.addEventListener('click', (evento) => {
     renderCarrinho();
     atualizarCards();
     exibirToast(`${nome} adicionado ao carrinho!`);
+    // abrir o carrinho automaticamente quando o usuário adiciona
+    openCart();
     return;
   }
 
@@ -231,6 +257,8 @@ document.addEventListener('click', (evento) => {
     renderCarrinho();
     atualizarCards();
     exibirToast(`${nome} adicionado ao carrinho!`);
+    // abrir o carrinho automaticamente quando o usuário adiciona
+    openCart();
     return;
   }
 
@@ -335,6 +363,8 @@ function limparCarrinho() {
   salvarCarrinho();
   renderCarrinho();
   atualizarCards();
+  // também esconder ações flutuantes quando carrinho limpo
+  hideFloatingActions();
 }
 
 function toggleCart() {
@@ -348,6 +378,8 @@ function abrirPagamento() {
     return;
   }
   document.body.classList.remove('carrinho-aberto');
+  // ao abrir pagamento, esconder ações flutuantes
+  hideFloatingActions();
   document.getElementById('paymentOverlay').classList.add('aberto');
   document.getElementById('totalPagamento').textContent =
     calcularTotal().toFixed(2).replace('.', ',');
@@ -474,7 +506,7 @@ function atualizarCards() {
       badge.textContent = `-${promocao.desconto}%`;
       const precoOriginal = parseFloat(card.dataset.preco);
       const precoAgora = precoOriginal * (1 - promocao.desconto / 100);
-      etiqueta.innerHTML = `<span class=\"preco-antes\">R$ ${precoOriginal.toFixed(2).replace('.', ',')}</span> <span class=\"preco-agora\">R$ ${precoAgora.toFixed(2).replace('.', ',')}</span>`;
+      etiqueta.innerHTML = `<span class="preco-antes">R$ ${precoOriginal.toFixed(2).replace('.', ',')}</span> <span class="preco-agora">R$ ${precoAgora.toFixed(2).replace('.', ',')}</span>`;
     } else {
       const badge = card.querySelector('.badge-promocao'); if (badge) badge.remove();
       etiqueta.textContent = `R$ ${parseFloat(card.dataset.preco).toFixed(2).replace('.', ',')}`;
