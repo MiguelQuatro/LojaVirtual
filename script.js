@@ -1,28 +1,38 @@
+// --- Estrutura do carrinho: items com { id, nome, preco, quantidade }
 let carrinho = carregarCarrinhoSalvo();
 
-// Estoque: mapa { nome: quantidadeDisponivel }
+// Estoque: mapa { id: quantidadeDisponivel }
 let estoque = carregarEstoqueSalvo();
-// Promoção: { nome, desconto }
+// Promoção: { id, desconto }
 let promocao = carregarPromocaoSalva();
 
-// Inicialização do estoque (gera aleatoriamente se não houver salvo)
-function inicializarEstoque() {
-  const cards = Array.from(document.querySelectorAll('.card'));
-  let mudou = false;
-  cards.forEach(card => {
-    const nome = card.dataset.nome;
-    if (estoque[nome] == null) {
-      // gera quantidade aleatória entre 0 e 8
-      estoque[nome] = Math.floor(Math.random() * 9);
-      mudou = true;
-    }
-  });
-  if (mudou) salvarEstoque();
+// ---------- helpers para DOM de produtos (cards) ----------
+function todosOsCards() {
+  return Array.from(document.querySelectorAll('.card'));
+}
+function cardPorId(id) {
+  return document.querySelector(`.card[data-id="${id}"]`);
+}
+function idPorNome(nome) {
+  const c = Array.from(document.querySelectorAll('.card')).find(x => x.dataset.nome === nome);
+  return c ? c.dataset.id : null;
 }
 
+// ---------- Estoque (migração para usar ids) ----------
 function carregarEstoqueSalvo() {
   try {
-    return JSON.parse(localStorage.getItem('boutique-estoque')) || {};
+    const raw = JSON.parse(localStorage.getItem('boutique-estoque')) || {};
+    const result = {};
+    // mapear valores do objeto salvo que podem estar por nome ou por id
+    const cards = todosOsCards();
+    cards.forEach(card => {
+      const id = card.dataset.id;
+      const nome = card.dataset.nome;
+      if (raw[id] != null) result[id] = raw[id];
+      else if (raw[nome] != null) result[id] = raw[nome];
+      // else: deixamos undefined para inicializar depois
+    });
+    return result;
   } catch {
     return {};
   }
@@ -31,9 +41,33 @@ function salvarEstoque() {
   localStorage.setItem('boutique-estoque', JSON.stringify(estoque));
 }
 
+// Inicialização do estoque (gera aleatoriamente se não houver salvo)
+function inicializarEstoque() {
+  const cards = todosOsCards();
+  let mudou = false;
+  cards.forEach(card => {
+    const id = card.dataset.id;
+    if (estoque[id] == null) {
+      // gera quantidade aleatória entre 0 e 8
+      estoque[id] = Math.floor(Math.random() * 9);
+      mudou = true;
+    }
+  });
+  if (mudou) salvarEstoque();
+}
+
+// ---------- Promoção (migração para usar ids) ----------
 function carregarPromocaoSalva() {
   try {
-    return JSON.parse(localStorage.getItem('boutique-promocao')) || null;
+    const raw = JSON.parse(localStorage.getItem('boutique-promocao')) || null;
+    if (!raw) return null;
+    // se já estiver por id, ok; se estiver por nome, converte
+    if (raw.id) return raw;
+    if (raw.nome) {
+      const id = idPorNome(raw.nome);
+      return id ? { id, desconto: raw.desconto } : null;
+    }
+    return null;
   } catch {
     return null;
   }
@@ -43,70 +77,118 @@ function salvarPromocao() {
 }
 
 function inicializarPromocao() {
-  // Se já existe promoção salva e o produto ainda existe, mantemos
-  const cards = Array.from(document.querySelectorAll('.card'));
-  const nomes = cards.map(c => c.dataset.nome);
-  if (promocao && nomes.includes(promocao.nome)) return;
-
-  // escolhe um produto aleatório que tenha estoque inicial (pelo menos 0 é ok)
-  if (nomes.length === 0) return;
-  const indice = Math.floor(Math.random() * nomes.length);
-  const nomeEscolhido = nomes[indice];
+  const cards = todosOsCards();
+  const ids = cards.map(c => c.dataset.id);
+  if (promocao && ids.includes(promocao.id)) return; // manter se válida
+  if (!ids.length) return;
+  const indice = Math.floor(Math.random() * ids.length);
+  const idEscolhido = ids[indice];
   const desconto = Math.floor(Math.random() * 31) + 10; // 10% a 40%
-  promocao = { nome: nomeEscolhido, desconto };
+  promocao = { id: idEscolhido, desconto };
   salvarPromocao();
 }
 
+// ---------- Carregamento/migração do carrinho (para incluir id) ----------
+function carregarCarrinhoSalvo() {
+  try {
+    const raw = JSON.parse(localStorage.getItem('boutique-carrinho')) || [];
+    // caso formato antigo fosse lista com { id, nome, preco } individuais, já migramos antes
+    // agora suportamos:
+    // - itens com id
+    // - itens com nome+quantidade mas sem id -> mapeamos usando os cards
+
+    if (!raw || !raw.length) return [];
+
+    // detecta se já está no novo formato (tem id em cada item)
+    const primeiro = raw[0];
+    if (primeiro && primeiro.id) return raw;
+
+    // se itens têm 'nome' e 'quantidade' mas sem id, tentamos mapear
+    const temNome = raw.every(it => it.nome);
+    if (temNome) {
+      const map = new Map();
+      raw.forEach(it => {
+        const id = idPorNome(it.nome) || it.nome; // se não achar, usa o nome como id fallback
+        if (!map.has(id)) map.set(id, { id, nome: it.nome, preco: it.preco, quantidade: 0 });
+        map.get(id).quantidade += (it.quantidade || 1);
+      });
+      return Array.from(map.values());
+    }
+
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+function salvarCarrinho() {
+  localStorage.setItem('boutique-carrinho', JSON.stringify(carrinho));
+}
+
+// ---------- Manipulação do carrinho (agora por id) ----------
 
 document.addEventListener('click', (evento) => {
+  // botão adicionar do card
   const botao = evento.target.closest('.comprar-btn');
-  if (!botao || botao.disabled) return;
+  if (botao && !botao.disabled) {
+    const card = botao.closest('.card');
+    const id = card.dataset.id;
+    const nome = card.dataset.nome;
+    const preco = parseFloat(card.dataset.preco);
 
-  const card = botao.closest('.card');
-  const nome = card.dataset.nome;
-  const preco = parseFloat(card.dataset.preco); // lendo dado estruturado, não texto solto
+    const existente = carrinho.find(item => item.id === id);
+    const quantidadeNoCarrinho = existente ? existente.quantidade : 0;
+    const disponivel = (estoque[id] || 0) - quantidadeNoCarrinho;
 
-  const existente = carrinho.find(item => item.nome === nome);
-  const quantidadeNoCarrinho = existente ? existente.quantidade : 0;
-  const disponivel = (estoque[nome] || 0) - quantidadeNoCarrinho;
+    if (disponivel <= 0) {
+      exibirToast(`Estoque insuficiente para ${nome}.`);
+      return;
+    }
 
-  if (disponivel <= 0) {
-    exibirToast(`Estoque insuficiente para ${nome}.`);
+    if (existente) existente.quantidade += 1;
+    else carrinho.push({ id, nome, preco, quantidade: 1 });
+
+    salvarCarrinho();
+    renderCarrinho();
+    atualizarCards();
+    exibirToast(`${nome} adicionado ao carrinho!`);
     return;
   }
 
-  if (existente) {
-    existente.quantidade += 1;
-  } else {
-    carrinho.push({ nome, preco, quantidade: 1 });
+  // incremento/decremento via controle no carrinho
+  const inc = evento.target.closest('.qty-increment');
+  if (inc) {
+    const id = inc.dataset.id;
+    const item = carrinho.find(i => i.id === id);
+    if (!item) return;
+    const disponivel = (estoque[id] || 0) - item.quantidade;
+    if (disponivel <= 0) { exibirToast('Não há mais unidades disponíveis.'); return; }
+    item.quantidade += 1;
+    salvarCarrinho(); renderCarrinho(); atualizarCards();
+    return;
+  }
+  const dec = evento.target.closest('.qty-decrement');
+  if (dec) {
+    const id = dec.dataset.id;
+    const item = carrinho.find(i => i.id === id);
+    if (!item) return;
+    item.quantidade -= 1;
+    if (item.quantidade <= 0) {
+      carrinho = carrinho.filter(i => i.id !== id);
+    }
+    salvarCarrinho(); renderCarrinho(); atualizarCards();
+    return;
   }
 
-  salvarCarrinho();
-  renderCarrinho();
-  atualizarCards();
-  exibirToast(`${nome} adicionado ao carrinho!`);
-});
-
-/* Remover um item específico (delegação também, pro botão "×" de cada linha) */
-document.addEventListener('click', (evento) => {
+  // remover completo (botão ×) — remove o item do carrinho
   const remover = evento.target.closest('.remover');
-  if (!remover) return;
-
-  const nome = remover.dataset.nome;
-  const item = carrinho.find(i => i.nome === nome);
-  if (!item) return;
-
-  // remove uma unidade; se ficar 0, remove o produto do carrinho
-  item.quantidade -= 1;
-  if (item.quantidade <= 0) {
-    carrinho = carrinho.filter(i => i.nome !== nome);
+  if (remover) {
+    const id = remover.dataset.id;
+    carrinho = carrinho.filter(item => item.id !== id);
+    salvarCarrinho(); renderCarrinho(); atualizarCards();
+    return;
   }
-
-  salvarCarrinho();
-  renderCarrinho();
-  atualizarCards();
 });
-
 
 function renderCarrinho() {
   const lista = document.querySelector('.cart-items');
@@ -123,21 +205,32 @@ function renderCarrinho() {
     carrinho.forEach(item => {
       const linha = document.createElement('div');
       linha.className = 'cart-item';
-      // calcula preço com promoção se aplicável
+
       const precoUnit = item.preco;
-      const ehPromocao = promocao && promocao.nome === item.nome;
+      const ehPromocao = promocao && promocao.id === item.id;
       const precoComDesconto = ehPromocao ? precoUnit * (1 - promocao.desconto / 100) : precoUnit;
       const subtotal = (precoComDesconto * item.quantidade).toFixed(2).replace('.', ',');
 
-      // mostra quantidade, preço unitário (com strike se promoção) e subtotal
       const unitHtml = ehPromocao
         ? `<small class="preco-antes">R$ ${precoUnit.toFixed(2).replace('.', ',')}</small> R$ ${precoComDesconto.toFixed(2).replace('.', ',')}`
         : `R$ ${precoUnit.toFixed(2).replace('.', ',')}`;
 
       linha.innerHTML = `
-        <span>${item.nome} (${item.quantidade}) — ${unitHtml} <small style="opacity:.8">(R$ ${subtotal})</small></span>
-        <span class="remover" data-nome="${item.nome}">&times;</span>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <strong>${item.nome}</strong>
+          <div style="font-size:0.92rem;opacity:.85">${unitHtml}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <div class="qty-controls">
+            <button class="qty-btn qty-decrement" data-id="${item.id}">−</button>
+            <span class="qty-value">${item.quantidade}</span>
+            <button class="qty-btn qty-increment" data-id="${item.id}">+</button>
+          </div>
+          <div style="font-weight:700">R$ ${subtotal}</div>
+          <div><button class="remover" data-id="${item.id}" title="Remover item">×</button></div>
+        </div>
       `;
+
       lista.appendChild(linha);
     });
   }
@@ -152,32 +245,10 @@ function renderCarrinho() {
 
 function calcularTotal() {
   return carrinho.reduce((soma, item) => {
-    const ehPromocao = promocao && promocao.nome === item.nome;
+    const ehPromocao = promocao && promocao.id === item.id;
     const descontoMul = ehPromocao ? (1 - promocao.desconto / 100) : 1;
     return soma + item.preco * item.quantidade * descontoMul;
   }, 0);
-}
-
-
-function salvarCarrinho() {
-  localStorage.setItem('boutique-carrinho', JSON.stringify(carrinho));
-}
-function carregarCarrinhoSalvo() {
-  try {
-    const raw = JSON.parse(localStorage.getItem('boutique-carrinho')) || [];
-    // MIGRAÇÃO: formato antigo tinha items individuais com 'id' e sem 'quantidade'
-    if (raw.length && raw[0].id && raw[0].nome && raw[0].preco && !raw[0].quantidade) {
-      const map = new Map();
-      raw.forEach(item => {
-        if (!map.has(item.nome)) map.set(item.nome, { nome: item.nome, preco: item.preco, quantidade: 0 });
-        map.get(item.nome).quantidade += 1;
-      });
-      return Array.from(map.values());
-    }
-    return raw;
-  } catch {
-    return [];
-  }
 }
 
 function limparCarrinho() {
@@ -187,15 +258,11 @@ function limparCarrinho() {
   atualizarCards();
 }
 
-
 function toggleCart() {
-  // a sidebar e o backdrop são controlados só por essa classe no <body>;
-  // veja as regras "body.carrinho-aberto ..." no style.css
   document.body.classList.toggle('carrinho-aberto');
 }
 
 function abrirPagamento() {
-  // agora checamos quantidade total
   const totalQuantidade = carrinho.reduce((s, it) => s + (it.quantidade || 0), 0);
   if (totalQuantidade === 0) {
     exibirToast('Seu carrinho está vazio! Adicione produtos para prosseguir.');
@@ -215,110 +282,89 @@ function fecharRecibo() {
   document.getElementById('reciboOverlay').classList.remove('aberto');
 }
 
-
+// Form de pagamento (mesmo comportamento)
 const inputNome = document.getElementById('inputNome');
 const inputNumero = document.getElementById('inputNumero');
 const inputValidade = document.getElementById('inputValidade');
 const inputCvv = document.getElementById('inputCvv');
 
-inputNome.addEventListener('input', () => {
+inputNome && inputNome.addEventListener('input', () => {
   document.getElementById('previewNome').textContent =
     inputNome.value.trim() ? inputNome.value.toUpperCase() : 'NOME COMPLETO';
 });
 
-inputNumero.addEventListener('input', () => {
-  // remove tudo que não é dígito, corta em 16, e insere espaço a cada 4
+inputNumero && inputNumero.addEventListener('input', () => {
   let digitos = inputNumero.value.replace(/\D/g, '').slice(0, 16);
   let formatado = digitos.replace(/(.{4})/g, '$1 ').trim();
   inputNumero.value = formatado;
-
   document.getElementById('previewNumero').textContent =
     formatado.padEnd(19, '•').slice(0, 19) || '•••• •••• •••• ••••';
 });
 
-inputValidade.addEventListener('input', () => {
-  // transforma "1225" em "12/25" automaticamente
+inputValidade && inputValidade.addEventListener('input', () => {
   let digitos = inputValidade.value.replace(/\D/g, '').slice(0, 4);
-  if (digitos.length >= 3) {
-    digitos = digitos.slice(0, 2) + '/' + digitos.slice(2);
-  }
+  if (digitos.length >= 3) digitos = digitos.slice(0, 2) + '/' + digitos.slice(2);
   inputValidade.value = digitos;
   document.getElementById('previewValidade').textContent = digitos || 'MM/AA';
 });
 
-inputCvv.addEventListener('input', () => {
+inputCvv && inputCvv.addEventListener('input', () => {
   inputCvv.value = inputCvv.value.replace(/\D/g, '').slice(0, 3);
 });
 
 document.getElementById('formPagamento').addEventListener('submit', (evento) => {
   evento.preventDefault();
   const erroEl = document.getElementById('erroPagamento');
-
   const numeroLimpo = inputNumero.value.replace(/\s/g, '');
-  if (inputNome.value.trim().length < 3) {
-    erroEl.textContent = 'Informe o nome como está no cartão.';
-    return;
-  }
-  if (numeroLimpo.length !== 16) {
-    erroEl.textContent = 'Número do cartão precisa ter 16 dígitos.';
-    return;
-  }
-  if (!/^\d{2}\/\d{2}$/.test(inputValidade.value)) {
-    erroEl.textContent = 'Validade inválida. Use o formato MM/AA.';
-    return;
-  }
-  if (inputCvv.value.length !== 3) {
-    erroEl.textContent = 'CVV precisa ter 3 dígitos.';
-    return;
-  }
-
+  if (inputNome.value.trim().length < 3) { erroEl.textContent = 'Informe o nome como está no cartão.'; return; }
+  if (numeroLimpo.length !== 16) { erroEl.textContent = 'Número do cartão precisa ter 16 dígitos.'; return; }
+  if (!/^\d{2}\/\d{2}$/.test(inputValidade.value)) { erroEl.textContent = 'Validade inválida. Use o formato MM/AA.'; return; }
+  if (inputCvv.value.length !== 3) { erroEl.textContent = 'CVV precisa ter 3 dígitos.'; return; }
   erroEl.textContent = '';
   confirmarPedido();
 });
 
 function confirmarPedido() {
-  // Ao confirmar, subtrai as quantidades do estoque
+  // Atualiza o estoque por id
   carrinho.forEach(item => {
-    if (estoque[item.nome] == null) estoque[item.nome] = 0;
-    estoque[item.nome] = Math.max(0, estoque[item.nome] - item.quantidade);
+    if (estoque[item.id] == null) estoque[item.id] = 0;
+    estoque[item.id] = Math.max(0, estoque[item.id] - item.quantidade);
   });
   salvarEstoque();
 
   const reciboItens = document.getElementById('reciboItens');
   reciboItens.innerHTML = carrinho
     .map(item => {
-      const ehPromocao = promocao && promocao.nome === item.nome;
+      const ehPromocao = promocao && promocao.id === item.id;
       const precoUnit = item.preco;
       const precoComDesconto = ehPromocao ? precoUnit * (1 - promocao.desconto / 100) : precoUnit;
       return `<p>${item.nome} (${item.quantidade}) — R$ ${precoComDesconto.toFixed(2).replace('.', ',')} — R$ ${(precoComDesconto*item.quantidade).toFixed(2).replace('.', ',')}</p>`;
-    })
-    .join('');
-  document.getElementById('reciboTotal').textContent =
-    calcularTotal().toFixed(2).replace('.', ',');
+    }).join('');
+  document.getElementById('reciboTotal').textContent = calcularTotal().toFixed(2).replace('.', ',');
 
   fecharPagamento();
   document.getElementById('reciboOverlay').classList.add('aberto');
 
-  // limpa formulário e carrinho pra próxima compra
   document.getElementById('formPagamento').reset();
   document.getElementById('previewNome').textContent = 'NOME COMPLETO';
   document.getElementById('previewNumero').textContent = '•••• •••• •••• ••••';
   document.getElementById('previewValidade').textContent = 'MM/AA';
+
   limparCarrinho();
   atualizarCards();
 }
 
-/* Atualiza os cards com informação de estoque (disponível) */
 function atualizarCards() {
-  const cards = Array.from(document.querySelectorAll('.card'));
+  const cards = todosOsCards();
   cards.forEach(card => {
+    const id = card.dataset.id;
     const nome = card.dataset.nome;
     const botao = card.querySelector('.comprar-btn');
     const statusEl = card.querySelector('.status');
     const etiqueta = card.querySelector('.etiqueta-preco');
 
-    const quantidadeNoCarrinho = (carrinho.find(i => i.nome === nome) || {}).quantidade || 0;
-    const disponivel = Math.max(0, (estoque[nome] || 0) - quantidadeNoCarrinho);
+    const quantidadeNoCarrinho = (carrinho.find(i => i.id === id) || {}).quantidade || 0;
+    const disponivel = Math.max(0, (estoque[id] || 0) - quantidadeNoCarrinho);
 
     if (disponivel <= 0) {
       statusEl.classList.remove('disponivel');
@@ -335,48 +381,31 @@ function atualizarCards() {
     }
 
     // promoção: badge e preço
-    if (promocao && promocao.nome === nome) {
-      // cria/atualiza badge
+    if (promocao && promocao.id === id) {
       let badge = card.querySelector('.badge-promocao');
-      if (!badge) {
-        badge = document.createElement('span');
-        badge.className = 'badge-promocao';
-        card.appendChild(badge);
-      }
+      if (!badge) { badge = document.createElement('span'); badge.className = 'badge-promocao'; card.appendChild(badge); }
       badge.textContent = `-${promocao.desconto}%`;
-
-      // ajusta etiqueta de preço para mostrar antes/depois
       const precoOriginal = parseFloat(card.dataset.preco);
       const precoAgora = precoOriginal * (1 - promocao.desconto / 100);
       etiqueta.innerHTML = `<span class="preco-antes">R$ ${precoOriginal.toFixed(2).replace('.', ',')}</span> <span class="preco-agora">R$ ${precoAgora.toFixed(2).replace('.', ',')}</span>`;
     } else {
-      // remove badge se existir
-      const badge = card.querySelector('.badge-promocao');
-      if (badge) badge.remove();
-      // restaura etiqueta simples (baseada no data-preco)
+      const badge = card.querySelector('.badge-promocao'); if (badge) badge.remove();
       etiqueta.textContent = `R$ ${parseFloat(card.dataset.preco).toFixed(2).replace('.', ',')}`;
     }
   });
 }
 
-/* =========================================================
-   TOAST "adicionado ao carrinho"
-   ========================================================= */
+// ---------- TOAST ----------
 function exibirToast(mensagem) {
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.textContent = mensagem;
   document.body.appendChild(toast);
-  // a animação CSS dura 2.2s; removemos o elemento depois
   setTimeout(() => toast.remove(), 2200);
 }
 
-/* =========================================================
-   INICIALIZAÇÃO
-   ========================================================= */
-// garante estoque inicial
+// ---------- INICIALIZAÇÃO ----------
 inicializarEstoque();
-// garante promoção
 inicializarPromocao();
 renderCarrinho();
 atualizarCards();

@@ -1,3 +1,5 @@
+/* added small controls for quantity adjustment in cart */
+
 :root {
   --cor-fundo: #EDE6D6;      /* kraft/papel */
   --cor-superficie: #FFFDF8; /* branco dos cards */
@@ -349,6 +351,14 @@ body.carrinho-aberto .cart-sidebar {
   color: var(--cor-tinta-suave);
   padding: 20px 0;
 }
+
+/* quantity controls */
+.qty-controls { display:flex; gap:8px; align-items:center; }
+.qty-btn {
+  width:28px; height:28px; border-radius:6px; border:none; background:#EEE; cursor:pointer; font-weight:700; font-size:16px;
+}
+.qty-btn:hover { background:#E0E0E0; }
+.qty-value { min-width:20px; text-align:center; display:inline-block; }
 
 .modal-footer { margin-top: 16px; }
 .total-linha {
