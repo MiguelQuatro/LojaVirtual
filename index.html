@@ -4,31 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boutique Animal Online</title>
-
-  <!-- Fontes: Fredoka pros títulos (arredondada, combina com "pet shop") -->
+ 
+  <!-- Fontes: Fredoka pros títulos (arredondada, combina com "pet shop"), Inter pro corpo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="httpas://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&dusplay=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+ 
   <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="img/carrinho.png" type"image/png">
+  <link rel="icon" href="img/carrinho.png" type="image/png">
 </head>
 <body>
-  
-  <!-- Cabeçalho -->
+ 
+  <!-- ===================== CABEÇALHO ===================== -->
   <header class="topo">
     <div class="marca">
       <span class="marca-icone">🐾</span>
-      <span class="marca-nome">Boutique Animal</span> <!-- Quantidade de produtos no carrinho -->
+      <span class="marca-nome">Boutique Animal</span>
+    </div>
+ 
+    <div class="cart-icon-container" onclick="toggleCart()">
+      <img src="img/carrinho.png" alt="Carrinho de Compras" class="cart-icon">
+      <span class="cart-count">0</span>
     </div>
   </header>
-
-  <!-- HERO -->
-  <section class ="hero">
+ 
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
     <h1>Boutique Animal Online</h1>
-    <p class="subtitulo">Petiscos e rações selecionadas para cães e gatos.</p>
+    <p class="subtitulo">Petiscos e rações selecionados pra quem tem rabo e late (ou mia).</p>
   </section>
-
-  
-  <!-- Lista de Produtos -->
+ 
+  <!--
+    ===================== PRODUTOS =====================
+    Cada card usa data-attributes (data-nome, data-preco, data-estoque).
+    Isso é proposital: o JS não precisa mais ficar "lendo texto" de dentro
+    do HTML (tipo parseFloat em cima de innerText) pra saber o preço.
+    Ele lê um dado estruturado, que é muito mais confiável.
+  -->
+ 
   <section class="corredor">
     <h2 class="corredor-titulo">🦴 Corredor 1 — Petiscos & Snacks</h2>
     <div class="trilho">
@@ -106,31 +118,29 @@
  
     </div>
   </section>
-
-  
-  <!-- Modal do Carrinho -->
+ 
+  <!-- ===================== MODAL DO CARRINHO ===================== -->
   <div class="overlay" id="cartOverlay">
     <div class="modal">
       <div class="modal-header">
         <h2>Seu Carrinho</h2>
         <span class="fechar" onclick="toggleCart()">&times;</span>
       </div>
-      
+ 
       <div class="cart-items"></div>
       <p class="carrinho-vazio-msg">Seu carrinho está vazio.</p>
-      
+ 
       <div class="modal-footer">
-       <div class="total-linha">
-        <span>Total</span>
-        <span>R$ <span class="card-total">0,00</span></span>
-       </div>
-        
-        <button class="btn-scundário" onclick="limparCarrinho()">Limpar Carrinho</button>
-        <button class="btn-primario" onclick="abrirPagamento)">Finalizar Compra</button>
+        <div class="total-linha">
+          <span>Total</span>
+          <span>R$ <span class="cart-total">0,00</span></span>
+        </div>
+        <button class="btn-secundario" onclick="limparCarrinho()">Limpar Carrinho</button>
+        <button class="btn-primario" onclick="abrirPagamento()">Finalizar Compra</button>
       </div>
     </div>
   </div>
-
+ 
   <!-- ===================== MODAL DE PAGAMENTO ===================== -->
   <div class="overlay" id="paymentOverlay">
     <div class="modal modal-pagamento">
@@ -192,7 +202,7 @@
       </form>
     </div>
   </div>
-  
+ 
   <!-- ===================== MODAL DE CONFIRMAÇÃO (recibo) ===================== -->
   <div class="overlay" id="reciboOverlay">
     <div class="modal modal-recibo">
@@ -211,3 +221,4 @@
   <script src="js/script.js"></script>
 </body>
 </html>
+ 
