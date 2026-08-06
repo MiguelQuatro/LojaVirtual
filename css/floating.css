@@ -1,0 +1,21 @@
+/* Floating actions */
+.floating-actions{
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  display: none;
+  gap: 8px;
+  flex-direction: column;
+  z-index: 30;
+}
+.floating-actions.aberto{ display:flex; }
+.floating-btn{
+  border: none;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+.floating-btn.finalizar{ background: var(--cor-primaria); }
+.floating-btn.limpar{ background: transparent; border: 2px solid rgba(255,255,255,0.12); color: var(--cor-alerta); }
