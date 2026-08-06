@@ -4,47 +4,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boutique Animal Online</title>
- 
+
   <!-- Fontes: Fredoka pros títulos (arredondada, combina com "pet shop"), Inter pro corpo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
- 
-  <link rel="stylesheet" href="style.css">
+
+  <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="img/carrinho.png" type="image/png">
 </head>
 <body>
- 
+
   <!-- ===================== CABEÇALHO ===================== -->
   <header class="topo">
     <div class="marca">
       <span class="marca-icone">🐾</span>
       <span class="marca-nome">Boutique Animal</span>
     </div>
- 
+
     <div class="cart-icon-container" onclick="toggleCart()">
       <img src="img/carrinho.png" alt="Carrinho de Compras" class="cart-icon">
       <span class="cart-count">0</span>
     </div>
   </header>
- 
+
   <!-- ===================== HERO ===================== -->
   <section class="hero">
     <h1>Boutique Animal Online</h1>
     <p class="subtitulo">Petiscos e rações selecionados pra quem tem rabo e late (ou mia).</p>
   </section>
- 
-  <!--
-    ===================== PRODUTOS =====================
-    Cada card usa data-attributes (data-nome, data-preco, data-estoque).
-    Isso é proposital: o JS não precisa mais ficar "lendo texto" de dentro
-    do HTML (tipo parseFloat em cima de innerText) pra saber o preço.
-    Ele lê um dado estruturado, que é muito mais confiável.
-  -->
- 
+
+  <!-- ===================== PRODUTOS ===================== -->
+
   <section class="corredor">
     <h2 class="corredor-titulo">🦴 Corredor 1 — Petiscos & Snacks</h2>
     <div class="trilho">
- 
+
       <article class="card" data-nome="Ossinho" data-preco="25.90" data-estoque="true">
         <div class="card-img"><img src="img/produto1.jpg" alt="Ossinho"></div>
         <span class="etiqueta-preco">R$ 25,90</span>
@@ -52,7 +46,7 @@
         <p class="status disponivel">Em estoque</p>
         <button class="comprar-btn">Adicionar</button>
       </article>
- 
+
       <article class="card" data-nome="Petiscos de Carne" data-preco="5.90" data-estoque="true">
         <div class="card-img"><img src="img/produto2.jpg" alt="Petiscos de Carne"></div>
         <span class="etiqueta-preco">R$ 5,90</span>
@@ -60,7 +54,7 @@
         <p class="status disponivel">Em estoque</p>
         <button class="comprar-btn">Adicionar</button>
       </article>
- 
+
       <article class="card" data-nome="Mix Saudável" data-preco="6.00" data-estoque="true">
         <div class="card-img"><img src="img/produto3.jpg" alt="Mix Saudável"></div>
         <span class="etiqueta-preco">R$ 6,00</span>
@@ -68,7 +62,7 @@
         <p class="status disponivel">Em estoque</p>
         <button class="comprar-btn">Adicionar</button>
       </article>
- 
+
       <article class="card" data-nome="Palitos de Limpeza Dental" data-preco="4.50" data-estoque="false">
         <div class="card-img"><img src="img/produto4.jpg" alt="Palitos de Limpeza Dental"></div>
         <span class="etiqueta-preco">R$ 4,50</span>
@@ -76,7 +70,7 @@
         <p class="status indisponivel">Fora de estoque</p>
         <button class="comprar-btn" disabled>Indisponível</button>
       </article>
- 
+
       <article class="card" data-nome="Degustação de Ração" data-preco="10.00" data-estoque="true">
         <div class="card-img"><img src="img/produto5.jpg" alt="Degustação de Ração"></div>
         <span class="etiqueta-preco">R$ 10,00</span>
@@ -84,14 +78,14 @@
         <p class="status disponivel">Em estoque</p>
         <button class="comprar-btn">Adicionar</button>
       </article>
- 
+
     </div>
   </section>
- 
+
   <section class="corredor">
     <h2 class="corredor-titulo">🍖 Corredor 2 — Rações Completas</h2>
     <div class="trilho">
- 
+
       <article class="card" data-nome="Ração Premier" data-preco="210.00" data-estoque="true">
         <div class="card-img"><img src="img/produto6.jpg" alt="Ração Premier"></div>
         <span class="etiqueta-preco">R$ 210,00</span>
@@ -99,7 +93,7 @@
         <p class="status disponivel">Em estoque</p>
         <button class="comprar-btn">Adicionar</button>
       </article>
- 
+
       <article class="card" data-nome="Ração para Idosos" data-preco="131.00" data-estoque="true">
         <div class="card-img"><img src="img/produto7.jpg" alt="Ração para Idosos"></div>
         <span class="etiqueta-preco">R$ 131,00</span>
@@ -107,7 +101,7 @@
         <p class="status disponivel">Em estoque</p>
         <button class="comprar-btn">Adicionar</button>
       </article>
- 
+
       <article class="card" data-nome="Ração para Filhotes" data-preco="124.60" data-estoque="true">
         <div class="card-img"><img src="img/produto8.jpg" alt="Ração para Filhotes"></div>
         <span class="etiqueta-preco">R$ 124,60</span>
@@ -115,32 +109,32 @@
         <p class="status disponivel">Em estoque</p>
         <button class="comprar-btn">Adicionar</button>
       </article>
- 
+
     </div>
   </section>
- 
-  <!-- ===================== MODAL DO CARRINHO ===================== -->
-  <div class="overlay" id="cartOverlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Seu Carrinho</h2>
-        <span class="fechar" onclick="toggleCart()">&times;</span>
-      </div>
- 
-      <div class="cart-items"></div>
-      <p class="carrinho-vazio-msg">Seu carrinho está vazio.</p>
- 
-      <div class="modal-footer">
-        <div class="total-linha">
-          <span>Total</span>
-          <span>R$ <span class="cart-total">0,00</span></span>
-        </div>
-        <button class="btn-secundario" onclick="limparCarrinho()">Limpar Carrinho</button>
-        <button class="btn-primario" onclick="abrirPagamento()">Finalizar Compra</button>
-      </div>
+
+  <!-- ===================== CARRINHO (menu lateral) ===================== -->
+  <div class="cart-backdrop" onclick="toggleCart()"></div>
+
+  <aside class="cart-sidebar">
+    <div class="modal-header">
+      <h2>Seu Carrinho</h2>
+      <span class="fechar" onclick="toggleCart()">&times;</span>
     </div>
-  </div>
- 
+
+    <div class="cart-items"></div>
+    <p class="carrinho-vazio-msg">Seu carrinho está vazio.</p>
+
+    <div class="modal-footer">
+      <div class="total-linha">
+        <span>Total</span>
+        <span>R$ <span class="cart-total">0,00</span></span>
+      </div>
+      <button class="btn-secundario" onclick="limparCarrinho()">Limpar Carrinho</button>
+      <button class="btn-primario" onclick="abrirPagamento()">Finalizar Compra</button>
+    </div>
+  </aside>
+
   <!-- ===================== MODAL DE PAGAMENTO ===================== -->
   <div class="overlay" id="paymentOverlay">
     <div class="modal modal-pagamento">
@@ -148,7 +142,7 @@
         <h2>Pagamento</h2>
         <span class="fechar" onclick="fecharPagamento()">&times;</span>
       </div>
- 
+
       <!-- Card visual do cartão: atualiza em tempo real conforme o usuário digita -->
       <div class="cartao-visual" id="cartaoVisual">
         <div class="cartao-topo">
@@ -167,18 +161,18 @@
           </div>
         </div>
       </div>
- 
+
       <form id="formPagamento" class="form-pagamento" novalidate>
         <label>
           Nome no cartão
           <input type="text" id="inputNome" placeholder="Como está impresso no cartão" required>
         </label>
- 
+
         <label>
           Número do cartão
           <input type="text" id="inputNumero" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" required>
         </label>
- 
+
         <div class="form-linha">
           <label>
             Validade
@@ -189,20 +183,20 @@
             <input type="text" id="inputCvv" placeholder="123" maxlength="3" inputmode="numeric" required>
           </label>
         </div>
- 
+
         <p class="erro-pagamento" id="erroPagamento"></p>
- 
+
         <div class="resumo-pagamento">
           <span>Total a pagar</span>
           <strong>R$ <span id="totalPagamento">0,00</span></strong>
         </div>
- 
+
         <button type="submit" class="btn-primario btn-confirmar">Confirmar Pagamento</button>
         <p class="aviso-fake">🔒 Simulação — nenhum dado real de cartão é enviado ou armazenado.</p>
       </form>
     </div>
   </div>
- 
+
   <!-- ===================== MODAL DE CONFIRMAÇÃO (recibo) ===================== -->
   <div class="overlay" id="reciboOverlay">
     <div class="modal modal-recibo">
@@ -217,7 +211,7 @@
       <button class="btn-primario" onclick="fecharRecibo()">Continuar comprando</button>
     </div>
   </div>
- 
-  <script src="script.js"></script>
+
+  <script src="js/script.js"></script>
 </body>
 </html>
