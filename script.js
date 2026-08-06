@@ -1,5 +1,34 @@
 let carrinho = carregarCarrinhoSalvo();
 
+// Estoque: mapa { nome: quantidadeDisponivel }
+let estoque = carregarEstoqueSalvo();
+
+// Inicialização do estoque (gera aleatoriamente se não houver salvo)
+function inicializarEstoque() {
+  const cards = Array.from(document.querySelectorAll('.card'));
+  let mudou = false;
+  cards.forEach(card => {
+    const nome = card.dataset.nome;
+    if (estoque[nome] == null) {
+      // gera quantidade aleatória entre 0 e 8
+      estoque[nome] = Math.floor(Math.random() * 9);
+      mudou = true;
+    }
+  });
+  if (mudou) salvarEstoque();
+}
+
+function carregarEstoqueSalvo() {
+  try {
+    return JSON.parse(localStorage.getItem('boutique-estoque')) || {};
+  } catch {
+    return {};
+  }
+}
+function salvarEstoque() {
+  localStorage.setItem('boutique-estoque', JSON.stringify(estoque));
+}
+
 
 document.addEventListener('click', (evento) => {
   const botao = evento.target.closest('.comprar-btn');
@@ -9,8 +38,15 @@ document.addEventListener('click', (evento) => {
   const nome = card.dataset.nome;
   const preco = parseFloat(card.dataset.preco); // lendo dado estruturado, não texto solto
 
-  // se já existe, incrementa quantidade; senão cria novo item com quantidade 1
   const existente = carrinho.find(item => item.nome === nome);
+  const quantidadeNoCarrinho = existente ? existente.quantidade : 0;
+  const disponivel = (estoque[nome] || 0) - quantidadeNoCarrinho;
+
+  if (disponivel <= 0) {
+    exibirToast(`Estoque insuficiente para ${nome}.`);
+    return;
+  }
+
   if (existente) {
     existente.quantidade += 1;
   } else {
@@ -19,6 +55,7 @@ document.addEventListener('click', (evento) => {
 
   salvarCarrinho();
   renderCarrinho();
+  atualizarCards();
   exibirToast(`${nome} adicionado ao carrinho!`);
 });
 
@@ -39,6 +76,7 @@ document.addEventListener('click', (evento) => {
 
   salvarCarrinho();
   renderCarrinho();
+  atualizarCards();
 });
 
 
@@ -105,6 +143,7 @@ function limparCarrinho() {
   carrinho = [];
   salvarCarrinho();
   renderCarrinho();
+  atualizarCards();
 }
 
 
@@ -197,6 +236,13 @@ document.getElementById('formPagamento').addEventListener('submit', (evento) => 
 });
 
 function confirmarPedido() {
+  // Ao confirmar, subtrai as quantidades do estoque
+  carrinho.forEach(item => {
+    if (estoque[item.nome] == null) estoque[item.nome] = 0;
+    estoque[item.nome] = Math.max(0, estoque[item.nome] - item.quantidade);
+  });
+  salvarEstoque();
+
   const reciboItens = document.getElementById('reciboItens');
   reciboItens.innerHTML = carrinho
     .map(item => `<p>${item.nome} (${item.quantidade}) — R$ ${item.preco.toFixed(2).replace('.', ',')} — R$ ${(item.preco*item.quantidade).toFixed(2).replace('.', ',')}</p>`)
@@ -213,6 +259,34 @@ function confirmarPedido() {
   document.getElementById('previewNumero').textContent = '•••• •••• •••• ••••';
   document.getElementById('previewValidade').textContent = 'MM/AA';
   limparCarrinho();
+  atualizarCards();
+}
+
+/* Atualiza os cards com informação de estoque (disponível) */
+function atualizarCards() {
+  const cards = Array.from(document.querySelectorAll('.card'));
+  cards.forEach(card => {
+    const nome = card.dataset.nome;
+    const botao = card.querySelector('.comprar-btn');
+    const statusEl = card.querySelector('.status');
+
+    const quantidadeNoCarrinho = (carrinho.find(i => i.nome === nome) || {}).quantidade || 0;
+    const disponivel = Math.max(0, (estoque[nome] || 0) - quantidadeNoCarrinho);
+
+    if (disponivel <= 0) {
+      statusEl.classList.remove('disponivel');
+      statusEl.classList.add('indisponivel');
+      statusEl.textContent = 'Fora de estoque';
+      botao.disabled = true;
+      botao.textContent = 'Indisponível';
+    } else {
+      statusEl.classList.remove('indisponivel');
+      statusEl.classList.add('disponivel');
+      statusEl.textContent = `Em estoque — ${disponivel} disponíveis`;
+      botao.disabled = false;
+      botao.textContent = 'Adicionar';
+    }
+  });
 }
 
 /* =========================================================
@@ -230,4 +304,7 @@ function exibirToast(mensagem) {
 /* =========================================================
    INICIALIZAÇÃO
    ========================================================= */
+// garante estoque inicial
+inicializarEstoque();
 renderCarrinho();
+atualizarCards();
