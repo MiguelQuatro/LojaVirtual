@@ -18,17 +18,30 @@ function idPorNome(nome) {
   return c ? c.dataset.id : null;
 }
 
-// ---------- Injeta botão + em cada card (adiciona direto ao carrinho) ----------
-function injectAddOneButtons() {
+// ---------- Injeta botões + e - em cada card (adiciona/remover direto no carrinho) ----------
+function injectPlusMinusButtons() {
   todosOsCards().forEach(card => {
-    if (card.querySelector('.comprar-plus')) return;
-    const btn = document.createElement('button');
-    btn.className = 'comprar-plus';
-    btn.type = 'button';
-    btn.title = 'Adicionar 1 ao carrinho';
-    btn.textContent = '+';
-    // append ao card (posicionado via CSS)
-    card.appendChild(btn);
+    if (card.querySelector('.card-mini-controls')) return;
+
+    // container para posicionamento (absolute dentro do card)
+    const container = document.createElement('div');
+    container.className = 'card-mini-controls';
+
+    const btnMinus = document.createElement('button');
+    btnMinus.className = 'comprar-minus';
+    btnMinus.type = 'button';
+    btnMinus.title = 'Remover 1 do carrinho';
+    btnMinus.textContent = '−';
+
+    const btnPlus = document.createElement('button');
+    btnPlus.className = 'comprar-plus';
+    btnPlus.type = 'button';
+    btnPlus.title = 'Adicionar 1 ao carrinho';
+    btnPlus.textContent = '+';
+
+    container.appendChild(btnMinus);
+    container.appendChild(btnPlus);
+    card.appendChild(container);
   });
 }
 
@@ -166,6 +179,31 @@ document.addEventListener('click', (evento) => {
     renderCarrinho();
     atualizarCards();
     exibirToast(`${nome} adicionado ao carrinho!`);
+    return;
+  }
+
+  // botão '-' direto no card (remove 1 imediatamente) - Classe: .comprar-minus
+  const minusBtn = evento.target.closest('.comprar-minus');
+  if (minusBtn && !minusBtn.disabled) {
+    const card = minusBtn.closest('.card');
+    const id = card.dataset.id;
+    const nome = card.dataset.nome;
+
+    const existente = carrinho.find(item => item.id === id);
+    if (!existente) {
+      exibirToast(`Não há ${nome} no carrinho.`);
+      return;
+    }
+
+    existente.quantidade -= 1;
+    if (existente.quantidade <= 0) {
+      carrinho = carrinho.filter(i => i.id !== id);
+    }
+
+    salvarCarrinho();
+    renderCarrinho();
+    atualizarCards();
+    exibirToast(`${nome} removido do carrinho.`);
     return;
   }
 
@@ -402,6 +440,7 @@ function atualizarCards() {
     const nome = card.dataset.nome;
     const botao = card.querySelector('.comprar-btn');
     const plusBtn = card.querySelector('.comprar-plus');
+    const minusBtn = card.querySelector('.comprar-minus');
     const statusEl = card.querySelector('.status');
     const etiqueta = card.querySelector('.etiqueta-preco');
 
@@ -422,6 +461,12 @@ function atualizarCards() {
       if (plusBtn) plusBtn.disabled = false;
     }
 
+    // minus button disabled if item not in cart
+    if (minusBtn) {
+      minusBtn.disabled = quantidadeNoCarrinho <= 0;
+      minusBtn.setAttribute('aria-disabled', String(quantidadeNoCarrinho <= 0));
+    }
+
     // promoção: badge e preço
     if (promocao && promocao.id === id) {
       let badge = card.querySelector('.badge-promocao');
@@ -429,7 +474,7 @@ function atualizarCards() {
       badge.textContent = `-${promocao.desconto}%`;
       const precoOriginal = parseFloat(card.dataset.preco);
       const precoAgora = precoOriginal * (1 - promocao.desconto / 100);
-      etiqueta.innerHTML = `<span class="preco-antes">R$ ${precoOriginal.toFixed(2).replace('.', ',')}</span> <span class="preco-agora">R$ ${precoAgora.toFixed(2).replace('.', ',')}</span>`;
+      etiqueta.innerHTML = `<span class=\"preco-antes\">R$ ${precoOriginal.toFixed(2).replace('.', ',')}</span> <span class=\"preco-agora\">R$ ${precoAgora.toFixed(2).replace('.', ',')}</span>`;
     } else {
       const badge = card.querySelector('.badge-promocao'); if (badge) badge.remove();
       etiqueta.textContent = `R$ ${parseFloat(card.dataset.preco).toFixed(2).replace('.', ',')}`;
@@ -447,7 +492,7 @@ function exibirToast(mensagem) {
 }
 
 // ---------- INICIALIZAÇÃO ----------
-injectAddOneButtons();
+injectPlusMinusButtons();
 inicializarEstoque();
 inicializarPromocao();
 renderCarrinho();
