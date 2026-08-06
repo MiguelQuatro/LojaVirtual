@@ -130,6 +130,7 @@
         <span>Total</span>
         <span>R$ <span class="cart-total">0,00</span></span>
       </div>
+      <button class="btn-secundario" onclick="closeCart()">Continuar comprando</button>
       <button class="btn-primario" onclick="abrirPagamento()">Finalizar Compra</button>
       <button class="btn-secundario" onclick="limparCarrinho()">Limpar Carrinho</button>
     </div>
@@ -210,6 +211,12 @@
       </div>
       <button class="btn-primario" onclick="fecharRecibo()">Continuar comprando</button>
     </div>
+  </div>
+
+  <!-- Ações flutuantes laterais: aparece quando o usuário clica em "Continuar comprando" -->
+  <div id="floatingActions" class="floating-actions" aria-hidden="true">
+    <button class="floating-btn finalizar" onclick="abrirPagamento()">Finalizar</button>
+    <button class="floating-btn limpar" onclick="limparCarrinho()">Limpar</button>
   </div>
 
   <script src="js/script.js"></script>
