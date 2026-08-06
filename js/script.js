@@ -179,6 +179,7 @@ document.addEventListener('click', (evento) => {
     renderCarrinho();
     atualizarCards();
     exibirToast(`${nome} adicionado ao carrinho!`);
+    openCart();
     return;
   }
 
@@ -231,6 +232,7 @@ document.addEventListener('click', (evento) => {
     renderCarrinho();
     atualizarCards();
     exibirToast(`${nome} adicionado ao carrinho!`);
+    openCart();
     return;
   }
 
@@ -335,6 +337,14 @@ function limparCarrinho() {
   salvarCarrinho();
   renderCarrinho();
   atualizarCards();
+}
+
+// helpers para abrir/fechar o carrinho sem alternar o estado
+function openCart() {
+  document.body.classList.add('carrinho-aberto');
+}
+function closeCart() {
+  document.body.classList.remove('carrinho-aberto');
 }
 
 function toggleCart() {
