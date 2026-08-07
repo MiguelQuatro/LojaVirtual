@@ -552,10 +552,17 @@ if (authOverlay) {
   });
 }
 
+// Expose some helpers to window so inline handlers always work
+window.toggleBrandMenu = toggleBrandMenu;
+window.fecharAuth = fecharAuth;
+window.toggleCart = toggleCart;
+window.abrirPagamento = abrirPagamento;
+window.fecharPagamento = fecharPagamento;
+window.fecharRecibo = fecharRecibo;
+
 // ---------- INICIALIZAÇÃO ----------
 inicializarEstoque();
 inicializarPromocao();
 renderCarrinho();
 atualizarCards();
 applyDarkModeClass();
-
