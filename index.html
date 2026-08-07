@@ -16,7 +16,6 @@
 
   <!-- ===================== CABEÇALHO ===================== -->
   <header class="topo">
-    <!-- Tornamos a marca interativa: ao clicar mostra um menu com Entrar e Modo Noturno -->
     <div class="marca" id="brand" tabindex="0" aria-haspopup="true" aria-expanded="false" onclick="toggleBrandMenu(event)">
       <span class="marca-icone">🐾</span>
       <span class="marca-nome">Boutique Animal</span>
@@ -220,18 +219,21 @@
     </div>
   </div>
 
-  <!-- ===================== AUTH (Entrar / Cadastrar) ===================== -->
-  <div class="overlay" id="authOverlay">
+  <!-- MODAL DE AUTENTICAÇÃO (simples, só UI) -->
+  <div class="overlay" id="authOverlay" aria-hidden="true">
     <div class="modal modal-auth">
       <div class="modal-header">
         <h2>Entrar / Cadastrar</h2>
         <span class="fechar" onclick="fecharAuth()">&times;</span>
       </div>
-      <div class="auth-actions">
-        <button class="btn-primario" id="openLoginForm">Entrar</button>
-        <button class="btn-secundario" id="openSignupForm">Cadastrar</button>
+
+      <div class="modal-body" id="authFormContainer">
+        <div class="auth-actions" style="margin-bottom:12px;">
+          <button class="btn-secundario" id="openLoginForm">Entrar</button>
+          <button class="btn-secundario" id="openSignupForm">Cadastrar</button>
+        </div>
+        <!-- O conteúdo do formulário é inserido dinamicamente pelo JS -->
       </div>
-      <div id="authFormContainer"></div>
     </div>
   </div>
 
