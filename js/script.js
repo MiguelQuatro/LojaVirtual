@@ -18,33 +18,6 @@ function idPorNome(nome) {
   return c ? c.dataset.id : null;
 }
 
-// ---------- Injeta botões + e - em cada card (adiciona/remover direto no carrinho) ----------
-function injectPlusMinusButtons() {
-  todosOsCards().forEach(card => {
-    if (card.querySelector('.card-mini-controls')) return;
-
-    // container para posicionamento (absolute dentro do card)
-    const container = document.createElement('div');
-    container.className = 'card-mini-controls';
-
-    const btnMinus = document.createElement('button');
-    btnMinus.className = 'comprar-minus';
-    btnMinus.type = 'button';
-    btnMinus.title = 'Remover 1 do carrinho';
-    btnMinus.textContent = '−';
-
-    const btnPlus = document.createElement('button');
-    btnPlus.className = 'comprar-plus';
-    btnPlus.type = 'button';
-    btnPlus.title = 'Adicionar 1 ao carrinho';
-    btnPlus.textContent = '+';
-
-    container.appendChild(btnMinus);
-    container.appendChild(btnPlus);
-    card.appendChild(container);
-  });
-}
-
 // ---------- Estoque (migração para usar ids) ----------
 function carregarEstoqueSalvo() {
   try {
@@ -152,87 +125,9 @@ function salvarCarrinho() {
   localStorage.setItem('boutique-carrinho', JSON.stringify(carrinho));
 }
 
-// ---------- Pequenas funções de UI: abrir/fechar carrinho e ações flutuantes ----------
-function openCart() {
-  document.body.classList.add('carrinho-aberto');
-  // quando abrimos o carrinho, escondemos as ações flutuantes
-  hideFloatingActions();
-}
-function closeCart() {
-  document.body.classList.remove('carrinho-aberto');
-  // ao fechar via "Continuar comprando" mostramos as ações flutuantes
-  showFloatingActions();
-}
-function showFloatingActions() {
-  const el = document.getElementById('floatingActions');
-  if (!el) return;
-  el.classList.add('aberto');
-  el.setAttribute('aria-hidden', 'false');
-}
-function hideFloatingActions() {
-  const el = document.getElementById('floatingActions');
-  if (!el) return;
-  el.classList.remove('aberto');
-  el.setAttribute('aria-hidden', 'true');
-}
-
 // ---------- Manipulação do carrinho (agora por id) ----------
 
 document.addEventListener('click', (evento) => {
-  // botão '+' direto no card (adiciona 1 imediatamente) - Classe: .comprar-plus
-  const plusBtn = evento.target.closest('.comprar-plus');
-  if (plusBtn && !plusBtn.disabled) {
-    const card = plusBtn.closest('.card');
-    const id = card.dataset.id;
-    const nome = card.dataset.nome;
-    const preco = parseFloat(card.dataset.preco);
-
-    const existente = carrinho.find(item => item.id === id);
-    const quantidadeNoCarrinho = existente ? existente.quantidade : 0;
-    const disponivel = (estoque[id] || 0) - quantidadeNoCarrinho;
-
-    if (disponivel <= 0) {
-      exibirToast(`Estoque insuficiente para ${nome}.`);
-      return;
-    }
-
-    if (existente) existente.quantidade += 1;
-    else carrinho.push({ id, nome, preco, quantidade: 1 });
-
-    salvarCarrinho();
-    renderCarrinho();
-    atualizarCards();
-    exibirToast(`${nome} adicionado ao carrinho!`);
-    // abrir o carrinho automaticamente quando o usuário adiciona
-    openCart();
-    return;
-  }
-
-  // botão '-' direto no card (remove 1 imediatamente) - Classe: .comprar-minus
-  const minusBtn = evento.target.closest('.comprar-minus');
-  if (minusBtn && !minusBtn.disabled) {
-    const card = minusBtn.closest('.card');
-    const id = card.dataset.id;
-    const nome = card.dataset.nome;
-
-    const existente = carrinho.find(item => item.id === id);
-    if (!existente) {
-      exibirToast(`Não há ${nome} no carrinho.`);
-      return;
-    }
-
-    existente.quantidade -= 1;
-    if (existente.quantidade <= 0) {
-      carrinho = carrinho.filter(i => i.id !== id);
-    }
-
-    salvarCarrinho();
-    renderCarrinho();
-    atualizarCards();
-    exibirToast(`${nome} removido do carrinho.`);
-    return;
-  }
-
   // botão adicionar do card
   const botao = evento.target.closest('.comprar-btn');
   if (botao && !botao.disabled) {
@@ -257,8 +152,6 @@ document.addEventListener('click', (evento) => {
     renderCarrinho();
     atualizarCards();
     exibirToast(`${nome} adicionado ao carrinho!`);
-    // abrir o carrinho automaticamente quando o usuário adiciona
-    openCart();
     return;
   }
 
@@ -294,6 +187,23 @@ document.addEventListener('click', (evento) => {
     carrinho = carrinho.filter(item => item.id !== id);
     salvarCarrinho(); renderCarrinho(); atualizarCards();
     return;
+  }
+
+  // Interações do brand/menu
+  const clickedBrandMenuButton = evento.target.closest('.marca-menu-item');
+  if (clickedBrandMenuButton) {
+    const id = clickedBrandMenuButton.id;
+    if (id === 'btnEntrar') {
+      // abrir modal de auth com opções Cadastro / Entrar
+      document.getElementById('authOverlay').classList.add('aberto');
+      fecharBrandMenu();
+      return;
+    }
+    if (id === 'btnDarkMode') {
+      toggleDarkMode();
+      fecharBrandMenu();
+      return;
+    }
   }
 });
 
@@ -363,8 +273,6 @@ function limparCarrinho() {
   salvarCarrinho();
   renderCarrinho();
   atualizarCards();
-  // também esconder ações flutuantes quando carrinho limpo
-  hideFloatingActions();
 }
 
 function toggleCart() {
@@ -378,8 +286,6 @@ function abrirPagamento() {
     return;
   }
   document.body.classList.remove('carrinho-aberto');
-  // ao abrir pagamento, esconder ações flutuantes
-  hideFloatingActions();
   document.getElementById('paymentOverlay').classList.add('aberto');
   document.getElementById('totalPagamento').textContent =
     calcularTotal().toFixed(2).replace('.', ',');
@@ -471,8 +377,6 @@ function atualizarCards() {
     const id = card.dataset.id;
     const nome = card.dataset.nome;
     const botao = card.querySelector('.comprar-btn');
-    const plusBtn = card.querySelector('.comprar-plus');
-    const minusBtn = card.querySelector('.comprar-minus');
     const statusEl = card.querySelector('.status');
     const etiqueta = card.querySelector('.etiqueta-preco');
 
@@ -483,20 +387,14 @@ function atualizarCards() {
       statusEl.classList.remove('disponivel');
       statusEl.classList.add('indisponivel');
       statusEl.textContent = 'Fora de estoque';
-      if (botao) { botao.disabled = true; botao.textContent = 'Indisponível'; }
-      if (plusBtn) plusBtn.disabled = true;
+      botao.disabled = true;
+      botao.textContent = 'Indisponível';
     } else {
       statusEl.classList.remove('indisponivel');
       statusEl.classList.add('disponivel');
       statusEl.textContent = `Em estoque — ${disponivel} disponíveis`;
-      if (botao) { botao.disabled = false; botao.textContent = 'Adicionar'; }
-      if (plusBtn) plusBtn.disabled = false;
-    }
-
-    // minus button disabled if item not in cart
-    if (minusBtn) {
-      minusBtn.disabled = quantidadeNoCarrinho <= 0;
-      minusBtn.setAttribute('aria-disabled', String(quantidadeNoCarrinho <= 0));
+      botao.disabled = false;
+      botao.textContent = 'Adicionar';
     }
 
     // promoção: badge e preço
@@ -523,9 +421,127 @@ function exibirToast(mensagem) {
   setTimeout(() => toast.remove(), 2200);
 }
 
+// ---------- BRAND / AUTH / DARKMODE ----------
+function toggleBrandMenu(event) {
+  // evita disparar ao clicar no botão dentro do header que não seja a marca
+  const menu = document.getElementById('brandMenu');
+  const expanded = document.getElementById('brand').getAttribute('aria-expanded') === 'true';
+  if (expanded) fecharBrandMenu();
+  else abrirBrandMenu();
+}
+
+function abrirBrandMenu() {
+  const menu = document.getElementById('brandMenu');
+  menu.style.display = 'flex';
+  menu.setAttribute('aria-hidden', 'false');
+  document.getElementById('brand').setAttribute('aria-expanded', 'true');
+}
+
+function fecharBrandMenu() {
+  const menu = document.getElementById('brandMenu');
+  menu.style.display = 'none';
+  menu.setAttribute('aria-hidden', 'true');
+  document.getElementById('brand').setAttribute('aria-expanded', 'false');
+}
+
+// fechar menu se clicar fora
+document.addEventListener('click', (e) => {
+  const brand = document.getElementById('brand');
+  if (!brand) return;
+  if (brand.contains(e.target)) return; // clique dentro da marca
+  fecharBrandMenu();
+});
+
+// Auth modal
+function fecharAuth() { document.getElementById('authOverlay').classList.remove('aberto'); }
+
+// forms simples de Entrar / Cadastrar (só UI, sem backend)
+document.getElementById('openLoginForm').addEventListener('click', () => {
+  const cont = document.getElementById('authFormContainer');
+  cont.innerHTML = `
+    <form id="loginForm" class="auth-form">
+      <label>Email<input type="email" id="loginEmail" required></label>
+      <label>Senha<input type="password" id="loginSenha" required></label>
+      <button class="btn-primario" type="submit">Entrar</button>
+    </form>
+  `;
+  attachAuthHandlers();
+});
+
+document.getElementById('openSignupForm').addEventListener('click', () => {
+  const cont = document.getElementById('authFormContainer');
+  cont.innerHTML = `
+    <form id="signupForm" class="auth-form">
+      <label>Nome<input type="text" id="signupNome" required></label>
+      <label>Email<input type="email" id="signupEmail" required></label>
+      <label>Senha<input type="password" id="signupSenha" required></label>
+      <button class="btn-primario" type="submit">Cadastrar</button>
+    </form>
+  `;
+  attachAuthHandlers();
+});
+
+function attachAuthHandlers() {
+  const loginForm = document.getElementById('loginForm');
+  if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      exibirToast('Simulação de login realizada.');
+      fecharAuth();
+    });
+  }
+  const signupForm = document.getElementById('signupForm');
+  if (signupForm) {
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      exibirToast('Cadastro simulado com sucesso.');
+      fecharAuth();
+    });
+  }
+}
+
+// ---------- DARK MODE (persistente) ----------
+function isDarkMode() {
+  return localStorage.getItem('boutique-darkmode') === '1';
+}
+
+function applyDarkModeClass() {
+  if (isDarkMode()) {
+    document.body.classList.add('dark');
+    const btn = document.getElementById('btnDarkMode'); if (btn) btn.textContent = 'Modo Claro';
+  } else {
+    document.body.classList.remove('dark');
+    const btn = document.getElementById('btnDarkMode'); if (btn) btn.textContent = 'Modo Noturno';
+  }
+}
+
+function toggleDarkMode() {
+  const atual = isDarkMode();
+  localStorage.setItem('boutique-darkmode', atual ? '0' : '1');
+  applyDarkModeClass();
+  exibirToast(atual ? 'Modo claro ativado' : 'Modo noturno ativado');
+}
+
 // ---------- INICIALIZAÇÃO ----------
-injectPlusMinusButtons();
 inicializarEstoque();
 inicializarPromocao();
 renderCarrinho();
 atualizarCards();
+applyDarkModeClass();
+
+// comportamento: ao abrir auth via marca, garantir que o overlay esteja visível e foco
+document.getElementById('btnEntrar').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('authOverlay').classList.add('aberto');
+});
+
+// fechar auth quando clicar fora do modal
+document.getElementById('authOverlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('authOverlay')) fecharAuth();
+});
+
+// acessibilidade de teclado para a marca
+document.getElementById('brand').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleBrandMenu(); }
+});
+
