@@ -1,31 +1,58 @@
-/* added small controls for quantity adjustment in cart */
-
+/* =========================================================
+   VARIÁVEIS — LIGHT MODE (padrão)
+   ========================================================= */
 :root {
-  --cor-fundo: #EDE6D6;      /* kraft/papel */
-  --cor-superficie: #FFFDF8; /* branco dos cards */
-  --cor-primaria: #2F4B3C;   /* verde-pinho: marca, títulos */
+  --cor-fundo: #EDE6D6;
+  --cor-superficie: #FFFDF8;
+  --cor-primaria: #2F4B3C;
   --cor-primaria-escura: #1F3329;
-  --cor-acento: #E0A438;     /* mostarda: preço, CTA */
+  --cor-acento: #E0A438;
   --cor-acento-escuro: #B9862A;
-  --cor-alerta: #B4482F;     /* rust: fora de estoque, limpar */
+  --cor-alerta: #B4482F;
   --cor-sucesso: #3E7C5A;
-  --cor-tinta: #24291F;      /* texto */
+  --cor-tinta: #24291F;
   --cor-tinta-suave: #5B5A4D;
+  --cor-borda: #DDD6C4;
 
   --fonte-titulo: 'Fredoka', sans-serif;
   --fonte-corpo: 'Inter', sans-serif;
-
   --raio: 16px;
   --sombra: 0 6px 20px rgba(36, 41, 31, 0.12);
 }
 
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+body.dark {
+  --cor-fundo: #1A1F17;
+  --cor-superficie: #242920;
+  --cor-primaria: #7DB98A;
+  --cor-primaria-escura: #5A9468;
+  --cor-acento: #E0A438;
+  --cor-acento-escuro: #F5BC5A;
+  --cor-alerta: #E06B50;
+  --cor-sucesso: #5DB87A;
+  --cor-tinta: #E8E4D8;
+  --cor-tinta-suave: #A8A49A;
+  --cor-borda: #3A3F35;
+  --sombra: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+body.dark {
+  background-image:
+    linear-gradient(rgba(26, 31, 23, 0.95), rgba(26, 31, 23, 0.95)),
+    url('../img/fundoA.jpg');
+}
+
+/* =========================================================
+   BASE
+   ========================================================= */
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
   font-family: var(--fonte-corpo);
   color: var(--cor-tinta);
-
   background-image:
     linear-gradient(rgba(237, 230, 214, 0.88), rgba(237, 230, 214, 0.88)),
     url('../img/fundoA.jpg');
@@ -33,6 +60,7 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* =========================================================
@@ -44,10 +72,11 @@ body {
   align-items: center;
   padding: 16px 32px;
   background: var(--cor-superficie);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
   position: sticky;
   top: 0;
   z-index: 10;
+  transition: background 0.3s ease;
 }
 
 .marca {
@@ -60,6 +89,52 @@ body {
   font-size: 1.2rem;
 }
 .marca-icone { font-size: 1.4rem; }
+
+.topo-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Botão dark mode */
+.btn-darkmode {
+  background: var(--cor-fundo);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.btn-darkmode:hover {
+  transform: rotate(20deg);
+  border-color: var(--cor-acento);
+}
+
+/* Botão login */
+.btn-login {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1.5px solid var(--cor-primaria);
+  color: var(--cor-primaria);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-family: var(--fonte-corpo);
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.btn-login:hover {
+  background: var(--cor-primaria);
+  color: white;
+}
 
 .cart-icon-container {
   position: relative;
@@ -102,7 +177,9 @@ body {
   margin: 0;
 }
 
-
+/* =========================================================
+   CORREDORES
+   ========================================================= */
 .corredor {
   max-width: 1200px;
   margin: 0 auto 40px;
@@ -114,21 +191,16 @@ body {
   font-size: 1.3rem;
   margin: 0 0 14px 4px;
 }
-
 .trilho {
   display: flex;
   gap: 20px;
   overflow-x: auto;
   padding: 12px 4px 20px;
-  scroll-snap-type: x mandatory; /* trava o scroll em cada card */
+  scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
 }
-/* Barra de scroll discreta (Chrome/Edge) */
 .trilho::-webkit-scrollbar { height: 8px; }
-.trilho::-webkit-scrollbar-thumb {
-  background: var(--cor-acento);
-  border-radius: 10px;
-}
+.trilho::-webkit-scrollbar-thumb { background: var(--cor-acento); border-radius: 10px; }
 .trilho::-webkit-scrollbar-track { background: transparent; }
 
 /* =========================================================
@@ -136,7 +208,7 @@ body {
    ========================================================= */
 .card {
   position: relative;
-  flex: 0 0 220px;       /* não encolhe: cada card tem largura fixa */
+  flex: 0 0 220px;
   scroll-snap-align: start;
   background: var(--cor-superficie);
   border-radius: var(--raio);
@@ -146,13 +218,12 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  transition: transform .2s ease, box-shadow .2s ease;
+  transition: transform .2s ease, box-shadow .2s ease, background 0.3s ease;
 }
 .card:hover {
   transform: translateY(-6px);
   box-shadow: 0 12px 24px rgba(36, 41, 31, 0.18);
 }
-
 .card-img {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -160,13 +231,8 @@ body {
   overflow: hidden;
   background: var(--cor-fundo);
 }
-.card-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.card-img img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Etiqueta de preço "pendurada" no canto do card — elemento assinatura */
 .etiqueta-preco {
   position: absolute;
   top: 10px;
@@ -205,13 +271,42 @@ body {
   transition: background .2s ease;
 }
 .comprar-btn:hover:enabled { background: var(--cor-primaria-escura); }
-.comprar-btn:disabled {
-  background: #D8D3C4;
-  color: #8B8879;
-  cursor: not-allowed;
+.comprar-btn:disabled { background: #D8D3C4; color: #8B8879; cursor: not-allowed; }
+
+/* Controles de quantidade no card */
+.card-qty-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  width: 100%;
+}
+.card-qty-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid var(--cor-borda);
+  background: var(--cor-fundo);
+  color: var(--cor-tinta);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-qty-btn:hover { background: var(--cor-acento); border-color: var(--cor-acento); color: var(--cor-primaria-escura); }
+.card-qty-valor {
+  font-weight: 700;
+  font-size: 1rem;
+  min-width: 24px;
+  text-align: center;
+  color: var(--cor-tinta);
 }
 
-/* Promoção badge */
+/* Badge promoção */
 .badge-promocao {
   position: absolute;
   left: 12px;
@@ -224,20 +319,11 @@ body {
   font-size: 0.75rem;
   box-shadow: 0 3px 8px rgba(0,0,0,0.18);
 }
-.preco-antes {
-  text-decoration: line-through;
-  opacity: 0.85;
-  font-size: 0.8rem;
-  margin-right: 6px;
-}
-.preco-agora {
-  color: var(--cor-acento-escuro);
-  font-weight: 700;
-}
+.preco-antes { text-decoration: line-through; opacity: 0.85; font-size: 0.8rem; margin-right: 6px; }
+.preco-agora { color: var(--cor-acento-escuro); font-weight: 700; }
 
 /* =========================================================
-   OVERLAYS / MODAIS (genérico — reutilizado por carrinho,
-   pagamento e recibo)
+   OVERLAYS / MODAIS
    ========================================================= */
 .overlay {
   display: none;
@@ -249,7 +335,7 @@ body {
   z-index: 2000;
   padding: 16px;
 }
-.overlay.aberto { display: flex; } /* controlado via JS, ver script.js */
+.overlay.aberto { display: flex; }
 
 .modal {
   background: var(--cor-superficie);
@@ -261,6 +347,7 @@ body {
   padding: 24px;
   box-shadow: 0 20px 50px rgba(0,0,0,0.3);
   animation: subirModal .25s ease;
+  transition: background 0.3s ease;
 }
 @keyframes subirModal {
   from { opacity: 0; transform: translateY(16px); }
@@ -273,20 +360,85 @@ body {
   align-items: center;
   margin-bottom: 12px;
 }
-.modal-header h2 {
-  font-family: var(--fonte-titulo);
-  color: var(--cor-primaria);
-  margin: 0;
-}
-.fechar {
-  cursor: pointer;
-  font-size: 22px;
-  color: var(--cor-tinta-suave);
-  line-height: 1;
-}
+.modal-header h2 { font-family: var(--fonte-titulo); color: var(--cor-primaria); margin: 0; }
+.fechar { cursor: pointer; font-size: 22px; color: var(--cor-tinta-suave); line-height: 1; }
 .fechar:hover { color: var(--cor-alerta); }
 
+/* =========================================================
+   MODAL LOGIN
+   ========================================================= */
+.login-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--cor-borda);
+  margin-bottom: 20px;
+}
+.login-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px;
+  font-family: var(--fonte-corpo);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--cor-tinta-suave);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.login-tab.ativo {
+  color: var(--cor-primaria);
+  border-bottom-color: var(--cor-primaria);
+}
+.login-tab:hover { color: var(--cor-primaria); }
 
+.form-login {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.form-login label {
+  font-size: 0.82rem;
+  color: var(--cor-tinta-suave);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.form-login input {
+  border: 1.5px solid var(--cor-borda);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.95rem;
+  font-family: var(--fonte-corpo);
+  background: var(--cor-fundo);
+  color: var(--cor-tinta);
+  transition: border-color 0.2s ease;
+}
+.form-login input:focus { outline: none; border-color: var(--cor-acento); }
+
+.erro-login {
+  color: var(--cor-alerta);
+  font-size: 0.82rem;
+  min-height: 18px;
+  margin: 0;
+}
+
+.login-link {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--cor-tinta-suave);
+  margin: 4px 0 0;
+}
+.login-link span {
+  color: var(--cor-primaria);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* =========================================================
+   CARRINHO LATERAL
+   ========================================================= */
 .cart-backdrop {
   position: fixed;
   inset: 0;
@@ -296,37 +448,30 @@ body {
   transition: opacity .25s ease;
   z-index: 1500;
 }
-body.carrinho-aberto .cart-backdrop {
-  opacity: 1;
-  pointer-events: auto;
-}
+body.carrinho-aberto .cart-backdrop { opacity: 1; pointer-events: auto; }
 
 .cart-sidebar {
   position: fixed;
-  top: 0;
-  right: 0;
+  top: 0; right: 0;
   height: 100vh;
   width: 380px;
   max-width: 88vw;
   background: var(--cor-superficie);
-  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.25);
+  box-shadow: -12px 0 40px rgba(0,0,0,0.25);
   padding: 24px;
   display: flex;
   flex-direction: column;
   z-index: 1600;
-  transform: translateX(100%); /* escondido fora da tela, à direita */
-  transition: transform .3s ease;
+  transform: translateX(100%);
+  transition: transform .3s ease, background 0.3s ease;
 }
-body.carrinho-aberto .cart-sidebar {
-  transform: translateX(0);
-}
+body.carrinho-aberto .cart-sidebar { transform: translateX(0); }
 
-/* ---- Carrinho ---- */
 .cart-items {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  flex: 1;              /* ocupa o espaço disponível entre header e footer */
+  flex: 1;
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -339,26 +484,13 @@ body.carrinho-aberto .cart-sidebar {
   padding: 8px 12px;
   font-size: 0.9rem;
 }
-.cart-item .remover {
-  cursor: pointer;
-  color: var(--cor-alerta);
-  font-weight: 700;
-  padding: 0 4px;
-}
-.carrinho-vazio-msg {
-  display: none;
-  text-align: center;
-  color: var(--cor-tinta-suave);
-  padding: 20px 0;
-}
+.cart-item .remover { cursor: pointer; color: var(--cor-alerta); font-weight: 700; padding: 0 4px; background: none; border: none; font-size: 1.1rem; }
+.carrinho-vazio-msg { display: none; text-align: center; color: var(--cor-tinta-suave); padding: 20px 0; }
 
-/* quantity controls */
-.qty-controls { display:flex; gap:8px; align-items:center; }
-.qty-btn {
-  width:28px; height:28px; border-radius:6px; border:none; background:#EEE; cursor:pointer; font-weight:700; font-size:16px;
-}
-.qty-btn:hover { background:#E0E0E0; }
-.qty-value { min-width:20px; text-align:center; display:inline-block; }
+.qty-controls { display: flex; gap: 8px; align-items: center; }
+.qty-btn { width: 28px; height: 28px; border-radius: 6px; border: none; background: var(--cor-fundo); color: var(--cor-tinta); cursor: pointer; font-weight: 700; font-size: 16px; }
+.qty-btn:hover { background: var(--cor-acento); }
+.qty-value { min-width: 20px; text-align: center; display: inline-block; }
 
 .modal-footer { margin-top: 16px; }
 .total-linha {
@@ -379,132 +511,62 @@ body.carrinho-aberto .cart-sidebar {
   cursor: pointer;
   margin-top: 8px;
   transition: filter .2s ease;
+  font-family: var(--fonte-corpo);
 }
 .btn-primario { background: var(--cor-acento); color: var(--cor-primaria-escura); }
 .btn-primario:hover { filter: brightness(0.95); }
 .btn-secundario { background: transparent; color: var(--cor-alerta); border: 1.5px solid var(--cor-alerta); }
 .btn-secundario:hover { background: rgba(180, 72, 47, 0.08); }
 
-/* ---- Cartão de pagamento (visual estilo cartão de crédito) ---- */
+/* =========================================================
+   PAGAMENTO
+   ========================================================= */
 .cartao-visual {
   background: linear-gradient(135deg, var(--cor-primaria), var(--cor-primaria-escura));
   color: white;
   border-radius: 14px;
   padding: 18px 20px;
   margin-bottom: 18px;
-  font-family: var(--fonte-corpo);
 }
-.cartao-topo {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 22px;
-  font-size: 0.85rem;
-  opacity: 0.9;
-}
-.cartao-numero {
-  font-size: 1.15rem;
-  letter-spacing: 2px;
-  margin-bottom: 18px;
-  font-variant-numeric: tabular-nums;
-}
-.cartao-baixo {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.85rem;
-}
-.cartao-label {
-  display: block;
-  font-size: 0.65rem;
-  opacity: 0.7;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
+.cartao-topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; font-size: 0.85rem; opacity: 0.9; }
+.cartao-numero { font-size: 1.15rem; letter-spacing: 2px; margin-bottom: 18px; font-variant-numeric: tabular-nums; }
+.cartao-baixo { display: flex; justify-content: space-between; font-size: 0.85rem; }
+.cartao-label { display: block; font-size: 0.65rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
 
 .form-pagamento { display: flex; flex-direction: column; gap: 12px; }
-.form-pagamento label {
-  font-size: 0.82rem;
-  color: var(--cor-tinta-suave);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
+.form-pagamento label { font-size: 0.82rem; color: var(--cor-tinta-suave); display: flex; flex-direction: column; gap: 4px; }
 .form-pagamento input {
-  border: 1.5px solid #DDD6C4;
+  border: 1.5px solid var(--cor-borda);
   border-radius: 8px;
   padding: 10px;
   font-size: 0.95rem;
   font-family: var(--fonte-corpo);
+  background: var(--cor-fundo);
+  color: var(--cor-tinta);
 }
-.form-pagamento input:focus {
-  outline: none;
-  border-color: var(--cor-acento);
-}
+.form-pagamento input:focus { outline: none; border-color: var(--cor-acento); }
 .form-linha { display: flex; gap: 12px; }
 .form-linha label { flex: 1; }
 
-.erro-pagamento {
-  color: var(--cor-alerta);
-  font-size: 0.82rem;
-  min-height: 18px;
-  margin: 0;
-}
-
-.resumo-pagamento {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--fonte-titulo);
-  color: var(--cor-primaria);
-  padding-top: 8px;
-  border-top: 1px dashed #DDD6C4;
-}
-.aviso-fake {
-  font-size: 0.72rem;
-  color: var(--cor-tinta-suave);
-  text-align: center;
-  margin-top: 4px;
-}
-
-/* ---- Recibo / confirmação ---- */
-.modal-recibo { text-align: center; }
-.recibo-selo {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: var(--cor-sucesso);
-  color: white;
-  font-size: 1.6rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 12px;
-}
-.recibo-sub { color: var(--cor-tinta-suave); margin-top: -6px; }
-.recibo-itens {
-  text-align: left;
-  background: var(--cor-fundo);
-  border-radius: 10px;
-  padding: 12px;
-  margin: 16px 0;
-  font-size: 0.88rem;
-  max-height: 160px;
-  overflow-y: auto;
-}
-.recibo-total {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--fonte-titulo);
-  color: var(--cor-primaria);
-  margin-bottom: 16px;
-}
+.erro-pagamento { color: var(--cor-alerta); font-size: 0.82rem; min-height: 18px; margin: 0; }
+.resumo-pagamento { display: flex; justify-content: space-between; font-family: var(--fonte-titulo); color: var(--cor-primaria); padding-top: 8px; border-top: 1px dashed var(--cor-borda); }
+.aviso-fake { font-size: 0.72rem; color: var(--cor-tinta-suave); text-align: center; margin-top: 4px; }
 
 /* =========================================================
-   TOAST "adicionado ao carrinho"
+   RECIBO
+   ========================================================= */
+.modal-recibo { text-align: center; }
+.recibo-selo { width: 56px; height: 56px; border-radius: 50%; background: var(--cor-sucesso); color: white; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+.recibo-sub { color: var(--cor-tinta-suave); margin-top: -6px; }
+.recibo-itens { text-align: left; background: var(--cor-fundo); border-radius: 10px; padding: 12px; margin: 16px 0; font-size: 0.88rem; max-height: 160px; overflow-y: auto; }
+.recibo-total { display: flex; justify-content: space-between; font-family: var(--fonte-titulo); color: var(--cor-primaria); margin-bottom: 16px; }
+
+/* =========================================================
+   TOAST
    ========================================================= */
 .toast {
   position: fixed;
-  top: 90px;
-  right: 24px;
+  top: 90px; right: 24px;
   background: var(--cor-primaria);
   color: white;
   padding: 12px 18px;
@@ -528,4 +590,5 @@ body.carrinho-aberto .cart-sidebar {
   .topo { padding: 14px 18px; }
   .card { flex-basis: 170px; }
   .modal { width: 100%; }
+  .btn-login span:last-child { display: none; }
 }
