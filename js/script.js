@@ -189,22 +189,7 @@ document.addEventListener('click', (evento) => {
     return;
   }
 
-  // Interações do brand/menu
-  const clickedBrandMenuButton = evento.target.closest('.marca-menu-item');
-  if (clickedBrandMenuButton) {
-    const id = clickedBrandMenuButton.id;
-    if (id === 'btnEntrar') {
-      // abrir modal de auth com opções Cadastro / Entrar
-      document.getElementById('authOverlay').classList.add('aberto');
-      fecharBrandMenu();
-      return;
-    }
-    if (id === 'btnDarkMode') {
-      toggleDarkMode();
-      fecharBrandMenu();
-      return;
-    }
-  }
+  // clicks on brand menu items are handled by dedicated listeners below
 });
 
 function renderCarrinho() {
@@ -421,65 +406,102 @@ function exibirToast(mensagem) {
   setTimeout(() => toast.remove(), 2200);
 }
 
-// ---------- BRAND / AUTH / DARKMODE ----------
-function toggleBrandMenu(event) {
-  // evita disparar ao clicar no botão dentro do header que não seja a marca
-  const menu = document.getElementById('brandMenu');
-  const expanded = document.getElementById('brand').getAttribute('aria-expanded') === 'true';
-  if (expanded) fecharBrandMenu();
-  else abrirBrandMenu();
-}
+// ---------- BRAND / AUTH / DARKMODE (Melhorias de interatividade) ----------
+const brandEl = document.getElementById('brand');
+const brandMenu = document.getElementById('brandMenu');
+const btnEntrar = document.getElementById('btnEntrar');
+const btnDarkMode = document.getElementById('btnDarkMode');
 
 function abrirBrandMenu() {
-  const menu = document.getElementById('brandMenu');
-  menu.style.display = 'flex';
-  menu.setAttribute('aria-hidden', 'false');
-  document.getElementById('brand').setAttribute('aria-expanded', 'true');
+  brandEl.classList.add('open');
+  brandEl.setAttribute('aria-expanded', 'true');
+  brandMenu.setAttribute('aria-hidden', 'false');
 }
-
 function fecharBrandMenu() {
-  const menu = document.getElementById('brandMenu');
-  menu.style.display = 'none';
-  menu.setAttribute('aria-hidden', 'true');
-  document.getElementById('brand').setAttribute('aria-expanded', 'false');
+  brandEl.classList.remove('open');
+  brandEl.setAttribute('aria-expanded', 'false');
+  brandMenu.setAttribute('aria-hidden', 'true');
+}
+function toggleBrandMenu(e) {
+  // evita fechar imediatamente caso o clique venha de dentro do menu
+  if (!brandEl.classList.contains('open')) abrirBrandMenu();
+  else fecharBrandMenu();
 }
 
-// fechar menu se clicar fora
+// Ensure clicks inside the menu don't bubble to document handlers
+if (brandMenu) {
+  brandMenu.addEventListener('click', (e) => { e.stopPropagation(); });
+}
+// Click on brand (not on menu items) toggles menu
+if (brandEl) {
+  brandEl.addEventListener('click', (e) => {
+    // if click landed on a menu item, let its handler run instead
+    if (e.target.closest('.marca-menu-item')) return;
+    toggleBrandMenu();
+  });
+  brandEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleBrandMenu(); }
+  });
+}
+
+// Close brand menu when clicking anywhere outside
 document.addEventListener('click', (e) => {
-  const brand = document.getElementById('brand');
-  if (!brand) return;
-  if (brand.contains(e.target)) return; // clique dentro da marca
+  if (!brandEl) return;
+  if (brandEl.contains(e.target)) return; // clique dentro da marca
   fecharBrandMenu();
 });
 
-// Auth modal
+// Button: Entrar — abre modal de autenticação
+if (btnEntrar) {
+  btnEntrar.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fecharBrandMenu();
+    document.getElementById('authOverlay').classList.add('aberto');
+  });
+}
+
+// Button: Dark Mode — toggle
+if (btnDarkMode) {
+  btnDarkMode.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleDarkMode();
+    fecharBrandMenu();
+  });
+}
+
+// Auth modal helpers
 function fecharAuth() { document.getElementById('authOverlay').classList.remove('aberto'); }
 
 // forms simples de Entrar / Cadastrar (só UI, sem backend)
-document.getElementById('openLoginForm').addEventListener('click', () => {
-  const cont = document.getElementById('authFormContainer');
-  cont.innerHTML = `
-    <form id="loginForm" class="auth-form">
-      <label>Email<input type="email" id="loginEmail" required></label>
-      <label>Senha<input type="password" id="loginSenha" required></label>
-      <button class="btn-primario" type="submit">Entrar</button>
-    </form>
-  `;
-  attachAuthHandlers();
-});
-
-document.getElementById('openSignupForm').addEventListener('click', () => {
-  const cont = document.getElementById('authFormContainer');
-  cont.innerHTML = `
-    <form id="signupForm" class="auth-form">
-      <label>Nome<input type="text" id="signupNome" required></label>
-      <label>Email<input type="email" id="signupEmail" required></label>
-      <label>Senha<input type="password" id="signupSenha" required></label>
-      <button class="btn-primario" type="submit">Cadastrar</button>
-    </form>
-  `;
-  attachAuthHandlers();
-});
+const openLoginBtn = document.getElementById('openLoginForm');
+const openSignupBtn = document.getElementById('openSignupForm');
+if (openLoginBtn) {
+  openLoginBtn.addEventListener('click', () => {
+    const cont = document.getElementById('authFormContainer');
+    cont.innerHTML = `
+      <form id="loginForm" class="auth-form">
+        <label>Email<input type="email" id="loginEmail" required></label>
+        <label>Senha<input type="password" id="loginSenha" required></label>
+        <button class="btn-primario" type="submit">Entrar</button>
+      </form>
+    `;
+    attachAuthHandlers();
+  });
+}
+if (openSignupBtn) {
+  openSignupBtn.addEventListener('click', () => {
+    const cont = document.getElementById('authFormContainer');
+    cont.innerHTML = `
+      <form id="signupForm" class="auth-form">
+        <label>Nome<input type="text" id="signupNome" required></label>
+        <label>Email<input type="email" id="signupEmail" required></label>
+        <label>Senha<input type="password" id="signupSenha" required></label>
+        <button class="btn-primario" type="submit">Cadastrar</button>
+      </form>
+    `;
+    attachAuthHandlers();
+  });
+}
 
 function attachAuthHandlers() {
   const loginForm = document.getElementById('loginForm');
@@ -508,10 +530,10 @@ function isDarkMode() {
 function applyDarkModeClass() {
   if (isDarkMode()) {
     document.body.classList.add('dark');
-    const btn = document.getElementById('btnDarkMode'); if (btn) btn.textContent = 'Modo Claro';
+    if (btnDarkMode) btnDarkMode.textContent = 'Modo Claro';
   } else {
     document.body.classList.remove('dark');
-    const btn = document.getElementById('btnDarkMode'); if (btn) btn.textContent = 'Modo Noturno';
+    if (btnDarkMode) btnDarkMode.textContent = 'Modo Noturno';
   }
 }
 
@@ -522,26 +544,18 @@ function toggleDarkMode() {
   exibirToast(atual ? 'Modo claro ativado' : 'Modo noturno ativado');
 }
 
+// Fecha auth quando clicar fora do modal
+const authOverlay = document.getElementById('authOverlay');
+if (authOverlay) {
+  authOverlay.addEventListener('click', (e) => {
+    if (e.target === authOverlay) fecharAuth();
+  });
+}
+
 // ---------- INICIALIZAÇÃO ----------
 inicializarEstoque();
 inicializarPromocao();
 renderCarrinho();
 atualizarCards();
 applyDarkModeClass();
-
-// comportamento: ao abrir auth via marca, garantir que o overlay esteja visível e foco
-document.getElementById('btnEntrar').addEventListener('click', (e) => {
-  e.stopPropagation();
-  document.getElementById('authOverlay').classList.add('aberto');
-});
-
-// fechar auth quando clicar fora do modal
-document.getElementById('authOverlay').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('authOverlay')) fecharAuth();
-});
-
-// acessibilidade de teclado para a marca
-document.getElementById('brand').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleBrandMenu(); }
-});
 

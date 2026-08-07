@@ -54,7 +54,7 @@ body.dark {
 /* styling for the brand dropdown menu */
 .marca { position: relative; }
 .marca-menu {
-  display: none; /* toggled by JS */
+  display: none; /* toggled by JS via .marca.open */
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
@@ -67,6 +67,7 @@ body.dark {
   min-width: 160px;
   z-index: 1700;
 }
+.marca.open .marca-menu { display: flex; }
 .marca-menu-item {
   background: transparent;
   border: none;
