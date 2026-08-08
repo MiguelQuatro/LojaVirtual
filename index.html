@@ -22,8 +22,9 @@
 
       <!-- menu lateral que aparece ao clicar na marca -->
       <div class="marca-menu" id="brandMenu" aria-hidden="true">
-        <button class="marca-menu-item" id="btnEntrar">Entrar / Cadastro</button>
-        <button class="marca-menu-item" id="btnDarkMode">Modo Noturno</button>
+        <button class="marca-menu-item entrar" id="btnEntrar">Entrar</button>
+        <button class="marca-menu-item cadastrar" id="btnCadastrar">Cadastrar</button>
+        <button class="marca-menu-item dark" id="btnDarkMode">Modo Noturno</button>
       </div>
     </div>
 
@@ -223,7 +224,7 @@
   <div class="overlay" id="authOverlay" aria-hidden="true">
     <div class="modal modal-auth">
       <div class="modal-header">
-        <h2>Entrar / Cadastrar</h2>
+        <h2 id="authOverlayTitle">Entrar / Cadastrar</h2>
         <span class="fechar" onclick="fecharAuth()">&times;</span>
       </div>
 
@@ -235,12 +236,6 @@
         <!-- O conteúdo do formulário é inserido dinamicamente pelo JS -->
       </div>
     </div>
-  </div>
-
-  <!-- Ações flutuantes laterais: aparece quando o usuário clica em "Continuar comprando" -->
-  <div id="floatingActions" class="floating-actions" aria-hidden="true">
-    <button class="floating-btn finalizar" onclick="abrirPagamento()">Finalizar</button>
-    <button class="floating-btn limpar" onclick="limparCarrinho()">Limpar</button>
   </div>
 
   <script src="js/script.js"></script>

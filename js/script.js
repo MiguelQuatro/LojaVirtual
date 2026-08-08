@@ -410,7 +410,9 @@ function exibirToast(mensagem) {
 const brandEl = document.getElementById('brand');
 const brandMenu = document.getElementById('brandMenu');
 const btnEntrar = document.getElementById('btnEntrar');
+const btnCadastrar = document.getElementById('btnCadastrar');
 const btnDarkMode = document.getElementById('btnDarkMode');
+const authOverlayTitle = document.getElementById('authOverlayTitle');
 
 function abrirBrandMenu() {
   brandEl.classList.add('open');
@@ -451,12 +453,25 @@ document.addEventListener('click', (e) => {
   fecharBrandMenu();
 });
 
-// Button: Entrar — abre modal de autenticação
+// Button: Entrar — abre modal de autenticação com a aba de login
 if (btnEntrar) {
   btnEntrar.addEventListener('click', (e) => {
     e.stopPropagation();
     fecharBrandMenu();
     document.getElementById('authOverlay').classList.add('aberto');
+    if (authOverlayTitle) authOverlayTitle.textContent = 'Entrar';
+    if (openLoginBtn) openLoginBtn.click();
+  });
+}
+
+// Button: Cadastrar — abre modal de autenticação com a aba de cadastro
+if (btnCadastrar) {
+  btnCadastrar.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fecharBrandMenu();
+    document.getElementById('authOverlay').classList.add('aberto');
+    if (authOverlayTitle) authOverlayTitle.textContent = 'Cadastrar';
+    if (openSignupBtn) openSignupBtn.click();
   });
 }
 
@@ -477,6 +492,7 @@ const openLoginBtn = document.getElementById('openLoginForm');
 const openSignupBtn = document.getElementById('openSignupForm');
 if (openLoginBtn) {
   openLoginBtn.addEventListener('click', () => {
+    if (authOverlayTitle) authOverlayTitle.textContent = 'Entrar';
     const cont = document.getElementById('authFormContainer');
     cont.innerHTML = `
       <form id="loginForm" class="auth-form">
@@ -490,6 +506,7 @@ if (openLoginBtn) {
 }
 if (openSignupBtn) {
   openSignupBtn.addEventListener('click', () => {
+    if (authOverlayTitle) authOverlayTitle.textContent = 'Cadastrar';
     const cont = document.getElementById('authFormContainer');
     cont.innerHTML = `
       <form id="signupForm" class="auth-form">

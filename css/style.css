@@ -52,44 +52,93 @@ body.dark {
 }
 
 /* styling for the brand side menu */
-.marca { position: relative; cursor: pointer; }
+.marca {
+  position: relative;
+  cursor: pointer;
+  padding: 10px 14px;
+  border-radius: 18px;
+  transition: background 0.25s ease, transform 0.25s ease, color 0.25s ease;
+}
+.marca:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+}
+.marca:hover .marca-nome {
+  animation: piscar 0.9s ease-in-out infinite;
+}
 .marca-menu {
   display: flex;
   position: fixed;
   top: 0;
   left: 0;
   height: 100%;
-  width: min(280px, 90vw);
-  max-width: 280px;
+  width: min(300px, 90vw);
+  max-width: 300px;
   flex-direction: column;
   justify-content: flex-start;
-  gap: 12px;
-  padding: 32px 18px;
-  background: var(--cor-superficie);
-  border-radius: 0 0 16px 0;
-  box-shadow: 4px 0 32px rgba(0,0,0,0.18);
+  gap: 14px;
+  padding: 36px 22px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  border-right: 1px solid rgba(47, 75, 60, 0.14);
+  border-radius: 0 0 18px 0;
+  box-shadow: 4px 0 40px rgba(0,0,0,0.18);
   transform: translateX(-105%);
-  transition: transform 0.28s ease;
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.28s ease, opacity 0.28s ease, visibility 0.28s ease;
   z-index: 2000;
 }
-.marca.open .marca-menu { transform: translateX(0); }
+.marca.open .marca-menu,
+.marca:hover .marca-menu {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+}
 .marca-menu-item {
   width: 100%;
-  background: transparent;
-  border: 1.5px solid var(--cor-primaria);
-  color: var(--cor-primaria);
-  border-radius: 14px;
-  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(77, 153, 105, 0.12), rgba(232, 174, 67, 0.12));
+  border: 1px solid rgba(47, 75, 60, 0.18);
+  color: var(--cor-primaria-escura);
+  border-radius: 16px;
+  padding: 14px 18px;
   text-align: left;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 .marca-menu-item:hover {
-  background: var(--cor-primaria);
+  background: linear-gradient(135deg, var(--cor-primaria), var(--cor-acento));
   color: var(--cor-superficie);
-  border-color: var(--cor-primaria-escura);
+  transform: translateX(2px);
+  box-shadow: 0 16px 24px rgba(47, 75, 60, 0.12);
+}
+.marca-menu-item::before {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+.marca-menu-item:nth-child(1)::before { content: '🔐'; }
+.marca-menu-item:nth-child(2)::before { content: '🌙'; }
+.marca-menu-item::after {
+  content: '›';
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+
+@keyframes piscar {
+  0%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 0 rgba(224, 164, 56, 0);
+  }
+  50% {
+    opacity: 0.68;
+    text-shadow: 0 0 12px rgba(224, 164, 56, 0.65);
+  }
 }
 
 /* smaller auth modal tweaks */
@@ -375,13 +424,18 @@ body.carrinho-aberto .cart-backdrop {
   width: 380px;
   max-width: 88vw;
   background: var(--cor-superficie);
-  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.25);
+  box-shadow: -16px 0 60px rgba(0, 0, 0, 0.28);
   padding: 24px;
   display: flex;
   flex-direction: column;
   z-index: 1600;
   transform: translateX(100%); /* escondido fora da tela, à direita */
   transition: transform .3s ease;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+}
+body.dark .cart-sidebar {
+  background: linear-gradient(180deg, rgba(20, 25, 20, 0.96), rgba(42, 47, 40, 0.98));
+  border-left-color: rgba(255, 255, 255, 0.08);
 }
 body.carrinho-aberto .cart-sidebar {
   transform: translateX(0);
@@ -391,7 +445,7 @@ body.carrinho-aberto .cart-sidebar {
 .cart-items {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   flex: 1;              /* ocupa o espaço disponível entre header e footer */
   overflow-y: auto;
   padding-right: 4px;
@@ -400,10 +454,23 @@ body.carrinho-aberto .cart-sidebar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--cor-fundo);
-  border-radius: 10px;
-  padding: 8px 12px;
-  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 14px 14px;
+  font-size: 0.95rem;
+  color: var(--cor-tinta);
+  backdrop-filter: blur(8px);
+}
+.cart-item h4 {
+  margin: 0 0 6px;
+  font-size: 0.98rem;
+  color: var(--cor-superficie);
+}
+.cart-item p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: rgba(255,255,255,0.75);
 }
 .cart-item .remover {
   cursor: pointer;
@@ -411,10 +478,13 @@ body.carrinho-aberto .cart-sidebar {
   font-weight: 700;
   padding: 0 4px;
 }
+.cart-item .qty-controls {
+  gap: 8px;
+}
 .carrinho-vazio-msg {
   display: none;
   text-align: center;
-  color: var(--cor-tinta-suave);
+  color: rgba(255,255,255,0.72);
   padding: 20px 0;
 }
 
