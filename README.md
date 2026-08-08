@@ -52,3 +52,6 @@ Método 2 — servidor simples (recomendado):
 
 ## Licença
 Nenhuma licença definida — adicione um arquivo `LICENSE` se quiser tornar este projeto reutilizável por terceiros.
+
+## Link para Visualizar
+https://miguelquatro.github.io/LojaVirtual/
