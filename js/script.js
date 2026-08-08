@@ -435,11 +435,23 @@ if (brandMenu) {
   brandMenu.addEventListener('click', (e) => { e.stopPropagation(); });
 }
 // Click on brand (not on menu items) toggles menu
-if (brandEl) {
+if (brandEl && brandMenu) {
   brandEl.addEventListener('click', (e) => {
     // if click landed on a menu item, let its handler run instead
     if (e.target.closest('.marca-menu-item')) return;
     toggleBrandMenu();
+  });
+  brandEl.addEventListener('mouseenter', abrirBrandMenu);
+  brandEl.addEventListener('mouseleave', () => {
+    setTimeout(() => {
+      if (!brandEl.matches(':hover') && !brandMenu.matches(':hover')) fecharBrandMenu();
+    }, 60);
+  });
+  brandMenu.addEventListener('mouseenter', abrirBrandMenu);
+  brandMenu.addEventListener('mouseleave', () => {
+    setTimeout(() => {
+      if (!brandEl.matches(':hover') && !brandMenu.matches(':hover')) fecharBrandMenu();
+    }, 60);
   });
   brandEl.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleBrandMenu(); }
@@ -453,14 +465,38 @@ document.addEventListener('click', (e) => {
   fecharBrandMenu();
 });
 
+function mostrarAuthForm(tipo) {
+  const cont = document.getElementById('authFormContainer');
+  if (authOverlayTitle) authOverlayTitle.textContent = tipo === 'cadastrar' ? 'Cadastrar' : 'Entrar';
+  if (!cont) return;
+  if (tipo === 'cadastrar') {
+    cont.innerHTML = `
+      <form id="signupForm" class="auth-form">
+        <label>Nome<input type="text" id="signupNome" required></label>
+        <label>Email<input type="email" id="signupEmail" required></label>
+        <label>Senha<input type="password" id="signupSenha" required></label>
+        <button class="btn-primario" type="submit">Cadastrar</button>
+      </form>
+    `;
+  } else {
+    cont.innerHTML = `
+      <form id="loginForm" class="auth-form">
+        <label>Email<input type="email" id="loginEmail" required></label>
+        <label>Senha<input type="password" id="loginSenha" required></label>
+        <button class="btn-primario" type="submit">Entrar</button>
+      </form>
+    `;
+  }
+  attachAuthHandlers();
+}
+
 // Button: Entrar — abre modal de autenticação com a aba de login
 if (btnEntrar) {
   btnEntrar.addEventListener('click', (e) => {
     e.stopPropagation();
     fecharBrandMenu();
     document.getElementById('authOverlay').classList.add('aberto');
-    if (authOverlayTitle) authOverlayTitle.textContent = 'Entrar';
-    if (openLoginBtn) openLoginBtn.click();
+    mostrarAuthForm('entrar');
   });
 }
 
@@ -470,8 +506,7 @@ if (btnCadastrar) {
     e.stopPropagation();
     fecharBrandMenu();
     document.getElementById('authOverlay').classList.add('aberto');
-    if (authOverlayTitle) authOverlayTitle.textContent = 'Cadastrar';
-    if (openSignupBtn) openSignupBtn.click();
+    mostrarAuthForm('cadastrar');
   });
 }
 
@@ -491,33 +526,10 @@ function fecharAuth() { document.getElementById('authOverlay').classList.remove(
 const openLoginBtn = document.getElementById('openLoginForm');
 const openSignupBtn = document.getElementById('openSignupForm');
 if (openLoginBtn) {
-  openLoginBtn.addEventListener('click', () => {
-    if (authOverlayTitle) authOverlayTitle.textContent = 'Entrar';
-    const cont = document.getElementById('authFormContainer');
-    cont.innerHTML = `
-      <form id="loginForm" class="auth-form">
-        <label>Email<input type="email" id="loginEmail" required></label>
-        <label>Senha<input type="password" id="loginSenha" required></label>
-        <button class="btn-primario" type="submit">Entrar</button>
-      </form>
-    `;
-    attachAuthHandlers();
-  });
+  openLoginBtn.addEventListener('click', () => mostrarAuthForm('entrar'));
 }
 if (openSignupBtn) {
-  openSignupBtn.addEventListener('click', () => {
-    if (authOverlayTitle) authOverlayTitle.textContent = 'Cadastrar';
-    const cont = document.getElementById('authFormContainer');
-    cont.innerHTML = `
-      <form id="signupForm" class="auth-form">
-        <label>Nome<input type="text" id="signupNome" required></label>
-        <label>Email<input type="email" id="signupEmail" required></label>
-        <label>Senha<input type="password" id="signupSenha" required></label>
-        <button class="btn-primario" type="submit">Cadastrar</button>
-      </form>
-    `;
-    attachAuthHandlers();
-  });
+  openSignupBtn.addEventListener('click', () => mostrarAuthForm('cadastrar'));
 }
 
 function attachAuthHandlers() {

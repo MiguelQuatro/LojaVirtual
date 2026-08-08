@@ -60,11 +60,13 @@ body.dark {
   transition: background 0.25s ease, transform 0.25s ease, color 0.25s ease;
 }
 .marca:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.18);
   transform: translateY(-1px);
 }
-.marca:hover .marca-nome {
+.marca:hover .marca-nome,
+.marca.open .marca-nome {
   animation: piscar 0.9s ease-in-out infinite;
+  color: var(--cor-acento);
 }
 .marca-menu {
   display: flex;
@@ -89,8 +91,13 @@ body.dark {
   transition: transform 0.28s ease, opacity 0.28s ease, visibility 0.28s ease;
   z-index: 2000;
 }
+body.dark .marca-menu {
+  background: rgba(18, 23, 18, 0.98);
+  border-right-color: rgba(255,255,255,0.08);
+}
 .marca.open .marca-menu,
-.marca:hover .marca-menu {
+.marca:hover .marca-menu,
+.marca-menu:hover {
   transform: translateX(0);
   opacity: 1;
   visibility: visible;
@@ -122,8 +129,9 @@ body.dark {
   font-size: 1.1rem;
   opacity: 0.9;
 }
-.marca-menu-item:nth-child(1)::before { content: '🔐'; }
-.marca-menu-item:nth-child(2)::before { content: '🌙'; }
+.marca-menu-item.entrar::before { content: '🔐'; }
+.marca-menu-item.cadastrar::before { content: '👤'; }
+.marca-menu-item.dark::before { content: '🌙'; }
 .marca-menu-item::after {
   content: '›';
   font-size: 1.2rem;
@@ -405,11 +413,14 @@ body.dark {
 .cart-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(36, 41, 31, 0.45);
+  background: rgba(36, 41, 31, 0.55);
   opacity: 0;
   pointer-events: none;
   transition: opacity .25s ease;
   z-index: 1500;
+}
+body.dark .cart-backdrop {
+  background: rgba(0, 0, 0, 0.7);
 }
 body.carrinho-aberto .cart-backdrop {
   opacity: 1;
@@ -454,13 +465,17 @@ body.carrinho-aberto .cart-sidebar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
-  padding: 14px 14px;
+  padding: 16px 14px;
   font-size: 0.95rem;
   color: var(--cor-tinta);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
+}
+body.dark .cart-item {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
 }
 .cart-item h4 {
   margin: 0 0 6px;
@@ -470,7 +485,7 @@ body.carrinho-aberto .cart-sidebar {
 .cart-item p {
   margin: 0;
   font-size: 0.84rem;
-  color: rgba(255,255,255,0.75);
+  color: rgba(255,255,255,0.78);
 }
 .cart-item .remover {
   cursor: pointer;
@@ -505,6 +520,7 @@ body.carrinho-aberto .cart-sidebar {
   color: var(--cor-primaria);
   margin-bottom: 14px;
 }
+body.dark .total-linha { color: #d8f1c1; }
 
 .btn-primario, .btn-secundario {
   width: 100%;
